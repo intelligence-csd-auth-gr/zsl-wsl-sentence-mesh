@@ -1,4 +1,4 @@
-# Amulet-Setn
+# Amulet-SETN 2020
 
 Code for the technique developed by our team Amulet for SETN 2020
 

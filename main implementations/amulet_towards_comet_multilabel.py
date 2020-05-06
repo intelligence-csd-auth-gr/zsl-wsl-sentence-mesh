@@ -293,7 +293,7 @@ def my_predictor_multi(biobert, x_test, label1, label2, th = 0.73):
 		df2['label2_instance' + str(i+1)] = []
 		
 		for sent in tokens.sents:
-			if(len(sent)>5 and len(sent)!=59):
+			if(len(sent)>10):
 				dist1=1-distance.cosine(label_embedding1,np.array(biobert.sentence_vector(sent.string.strip())))
 				dist2=1-distance.cosine(label_embedding2,np.array(biobert.sentence_vector(sent.string.strip())))
 				if(dist1>=max1):

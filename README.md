@@ -7,5 +7,5 @@ Code for the technique developed by our team Amulet for SETN 2020
 |    Name     | e-mail          |
 | ------------- |:-------------:|
 | Νικόλαος Μυλωνάς     | myloniko@csd.auth.gr|
-| Σταμάτης Κάρλος      | stkarlos@upatras.gr |
+| Σταμάτης Κάρλος      | stkarlos@csd.auth.gr |
 | Γρηγόριος Τσουμάκας  | greg@csd.auth.gr    |

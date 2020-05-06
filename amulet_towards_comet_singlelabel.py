@@ -79,7 +79,7 @@ def my_predictor(biobert, x_test, threshold = 0.76):
 
 	return y_pred
 
-def change_labels(y_labels):
+def change_labels(y_labels, label):
 
 	new_y=[]
 	for y in y_labels:
@@ -393,7 +393,7 @@ def my_predictor_save(biobert, x, label_emb):
 	total_calls, total_sent = [] , []
 	
 	for i in range(0,len(x)):
-		if i % 10 == 0:
+		if i % 100 == 0:
 			print(i, x[i][0:20])
 
 		c, calls = 0, 0
@@ -495,7 +495,7 @@ def splitTextToNumber(string,number):
 
 #label_embedding=np.array(torch.stack(biobert.word_vector(label)))[0]
 
-def state_of_the_art_predictor(x_test,th,cmax,label_embedding):
+def state_of_the_art_predictor(biobert,x_test,th,cmax,label_embedding):
   
 	y_pred=[0 for i in range(len(x_test))]
 	#biobert=BiobertEmbedding()
@@ -527,7 +527,24 @@ def state_of_the_art_predictor(x_test,th,cmax,label_embedding):
 		print(final_max)
 	return y_pred , density
 
-def save_results():
+def save_results(mode, label, scenario, y_test_edited, predictions, time_execution, threshold = []):
+
+	accuracy, prec, rec, f1_macro, f1_weighted, exec_time = [], [], [], [], [], []
+
+	if mode == 5:
+
+		f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
+		f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
+		accuracy.append(acc(y_test_edited, predictions))
+		prec.append(precision_score(y_test_edited, predictions))
+		rec.append(recall_score(y_test_edited, predictions))
+		exec_time.append(time_execution)
+
+		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time)), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)']) 
+		df.to_csv('SETN2020_LWS_results_' + label + '_' + scenario +  '.csv')
+
+		return
+
 	for th in threshold:
 				
 				start1 = time.time()
@@ -711,7 +728,7 @@ def main(mesh, alg, scenario, path):
 	else:
 		sc = [scenario_input[scenario - 1]]
 
-
+	print(scenario, sc)
 	#alg = 'furn'
 	mode = alg
 
@@ -721,13 +738,14 @@ def main(mesh, alg, scenario, path):
 		
 
 		# read datasets
-		os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\raw data')
-		print(os.listdir(os.getcwd()))
-		for selected_scenario in sc:
 		
-			print(label, selected_scenario)
+		#print(os.listdir(os.getcwd()))
+		for selected_scenario in sc:
 
-			if selected_scenario == 'train_ratio_1_1_test_ratio_mixed':
+			os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\raw data')
+			print('Label: ', label, 'Scenario: ', selected_scenario)
+
+			if selected_scenario == 'train_ratio_1_1_test_ratio':
 				#pass
 				x_train,y_train = prepare_X_Y("mesh_2018_" + label.lower() + ".txt")
 				x_test,y_test   = prepare_X_Y("mesh_2019_" + label.lower()  + "_mixed.txt")
@@ -751,8 +769,8 @@ def main(mesh, alg, scenario, path):
 
 			threshold = np.arange(0.65, 0.91, 0.01) #[0.77]#[0.7714534135333784] #np.arange(0.65, 0.91, 0.01)
 
-			accuracy, prec, rec, f1_macro, f1_weighted = [], [], [], [], []
-			exec_time = []
+			#accuracy, prec, rec, f1_macro, f1_weighted, exec_time = [], [], [], [], [], []
+			
 
 
 
@@ -761,11 +779,6 @@ def main(mesh, alg, scenario, path):
 				biobert = BiobertEmbedding()
 
 				print('\n****reduce time mode****\n')
-
-				#with open('BERT_per_sentence_' + label +  '_' + sc + '_save_embs.pickle', 'rb') as f:
-				#	df_train, a, y_train, b, x_train_new, c, x_train_old, d, reject_train, e, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = pickle.load(f)
-				#f.close()
-				#del a,b,c,d,e 
 
 				start_emb = time.time()
 
@@ -782,16 +795,41 @@ def main(mesh, alg, scenario, path):
 				os.chdir(path)
 				continue
 
-			if mode == 'mode1':
+
+			elif mode == 7:
+				# use Embeddings
+				biobert = BiobertEmbedding()
+
+				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence')
+
+				with open('bioBERT_profile_per_sentence_' + label + '_' + selected_scenario + '.pickle', 'rb') as f:
+					x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = pickle.load(f)
+				f.close()
+
+
+				start_emb = time.time()
+				x_train_bert = get_embeddings(biobert, x_train_new)
+				x_test_bert  = get_embeddings(biobert, x_test)
+				end_emb = time.time()
+
+				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings')
+				with open("bioBERTemb_" + selected_scenario + '_' + label + '.pickle' , 'wb') as f:
+					pickle.dump([x_train_bert, x_test_bert, (end_emb - start_emb), x_train_new, x_test_new, y_train_new, y_test_new], f,  protocol=pickle.HIGHEST_PROTOCOL)
+				f.close()
+				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence')
+
+				print('Pickle was saved')
+				os.chdir(path)
+
+				continue
+
+
+			if mode == 1:
 			
 				# on the fly evaluation by cosine similarity
 
-				with open('BERT_per_sentence_' + label +  '_' + sc + '_save_embsnew.pickle', 'rb') as f:
-					#x_train_bert1, x_test_bert1, predictions_train, predictions_test, time_preprocess2 = pickle.load(f)
-					#x_train_bert_profile, x_test_bert_profile, x_train_bert1_077, x_test_bert1_077, time_preprocess2 = pickle.load(f)
-					#x_train_bert_profile, x_test_bert_profile, x_train_bert1_077, x_test_bert1_077, x_train_new, x_test_new, [total_calls_train, total_sent_train, total_calls_test, total_sent_test], time_preprocess2 = pickle.load(f)
+				with open('bioBERT_profile_per_sentence_' + label + '_' + selected_scenario + '.pickle', 'rb') as f:
 					x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = pickle.load(f)
-
 				f.close()
 
 				y_test_edited = change_labels(y_test_new)
@@ -865,41 +903,32 @@ def main(mesh, alg, scenario, path):
 				# read Emdeddings
 				#prepared_test_embeddings  = pd.read_csv('x_test_embedding_file.csv')
 				#prepared_train_embeddings = pd.read_csv('x_train_embedding_file.csv')
-			elif mode == 'furn':
+			elif mode == 5:
 
-				start1 = time.time()
-
-
-				with open('BERT_per_sentence_' + label +  '_' + sc + '_save_embsnew.pickle', 'rb') as f:
-					#x_train_bert1, x_test_bert1, predictions_train, predictions_test, time_preprocess2 = pickle.load(f)
-					#x_train_bert_profile, x_test_bert_profile, x_train_bert1_077, x_test_bert1_077, time_preprocess2 = pickle.load(f)
-					#x_train_bert_profile, x_test_bert_profile, x_train_bert1_077, x_test_bert1_077, x_train_new, x_test_new, [total_calls_train, total_sent_train, total_calls_test, total_sent_test], time_preprocess2 = pickle.load(f)
+				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence')
+				with open('bioBERT_profile_per_sentence_' + label + '_' + selected_scenario + '.pickle', 'rb') as f:
 					x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = pickle.load(f)
+				f.close()
+				os.chdir(path)
 
-				#f.close()
-				#x_train = x_train_new
-				#x_test = x_test_new
+				biobert = BiobertEmbedding()
+
+				start = time.time()
 
 				label_emb= np.array(torch.stack(biobert.word_vector(label)))[0]
-				predictions , density = state_of_the_art_predictor(x_test_new,0.77,3,label_emb)
-				y_test_edited = change_labels(y_test_new)
+				predictions , density = state_of_the_art_predictor(biobert, x_test_new,0.77,3,label_emb)
+				y_test_edited = change_labels(y_test_new, label)
 
+				end = time.time()
+				time_execution = np.round(end-start,2)
 
-				f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
-				f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
-				accuracy.append(acc(y_test_edited, predictions))
-				prec.append(precision_score(y_test_edited, predictions))
-				rec.append(recall_score(y_test_edited, predictions))
-				end1 = time.time()
-				exec_time.append((end1 - start1))
-				
-				#continue
-				threshold = []
-
+				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\LWS')
 				print('Saving density ... ')
-				with open('density_' + label + '_' + sc + '_' + mode + 'new.pickle', 'wb') as f:
-						pickle.dump([density, predictions, y_test_edited], f)
+				with open('density_' + label + '_' + selected_scenario + '.pickle', 'wb') as f:
+						pickle.dump([density, predictions, y_test_edited, np.round(end-start,2)], f)
 				f.close()
+
+				save_results(mode, label, selected_scenario, y_test_edited, predictions, time_execution)
 
 	return
 
@@ -914,9 +943,9 @@ if __name__ == "__main__":
 	random.seed(24)
 	
 	mesh = int(input('You have to select among our labels: \n1. Biomineralization \n2. Chlorophyceae \n3. Cytoglobin \n4. all of them\n\nYour answer: ... '))
-	alg = int(input('Choose which algorithm you want to run: \n1. DCbio(Sentence-max) \n2. Baseline of WSL \n3. WDCbio(tfidf) \n4. WDCbio(bioBERT) \n5. LWS\n6. Save Embeddings\nYour answer: ... '))
+	alg = int(input('Choose which algorithm you want to run: \n1. DCbio(Sentence-max) \n2. Baseline of WSL \n3. WDCbio(tfidf) \n4. WDCbio(bioBERT) \n5. LWS\n6. Save Embeddings on Sentence Level\n7. Save Embeddings\nYour answer: ... '))
 
-	scenario = int(input('Moreover, we need to knwo which sceraio based on ratio between train and test data you need to run: \n1. 1_1 \n2. 1_4\n 3. both\n\nYour answer: ...'))
+	scenario = int(input('Moreover, we need to knwo which sceraio based on ratio between train and test data you need to run: \n1. 1_1 \n2. 1_4\n3. both\n\nYour answer: ...'))
 
 	#labels = ["Biomineralization", "Chlorophyceae" , "Cytoglobin"]
 	#labels = ["Chlorophyceae"]

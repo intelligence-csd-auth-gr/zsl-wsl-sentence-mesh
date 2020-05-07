@@ -168,7 +168,7 @@ def augment_y_with_embeddings(biobert, label, x_train, y_train, command, thresho
 			
 	return y_all, reject_th
 
-def occurence(x_train, y_train):
+def occurence(x_train, y_train, label):
 
 	y_train_occ = []
 	for i in range(0,len(x_train)):
@@ -527,7 +527,7 @@ def state_of_the_art_predictor(biobert,x_test,th,cmax,label_embedding):
 		print(final_max)
 	return y_pred , density
 
-def save_results(mode, label, scenario, y_test_edited, predictions, time_execution, threshold = []):
+def save_results(mode, label, scenario, y_test_edited, predictions, time_execution, threshold = [], rest_information = []):
 
 	accuracy, prec, rec, f1_macro, f1_weighted, exec_time = [], [], [], [], [], []
 
@@ -558,6 +558,26 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 		df.to_csv('SETN2020_DCbioSentenceMax_results_' + label + '_' + scenario + '.csv')
 
 		return
+
+	elif mode == 2:
+
+		learner = rest_information[2]
+
+		f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
+		f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
+		accuracy.append(acc(y_test_edited, predictions))
+		prec.append(precision_score(y_test_edited, predictions))
+		rec.append(recall_score(y_test_edited, predictions))
+		exec_time.append(time_execution)
+
+
+		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time, [rest_information[0]], [rest_information[1]])), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)', 'shape train data', 'shape test data']) 
+		df.to_csv('SETN2020_WSL-baseline_results_' + label + '_' + scenario + '_' + learner + '.csv')
+
+		return
+
+
+
 
 	for th in threshold:
 				
@@ -886,33 +906,35 @@ def main(mesh, alg, scenario, path):
 				os.chdir(path)
 
 			
-			elif mode == 'mode2':
+			elif mode == 2:
 			
 				# abstract occurence
-				start1 = time.time()
+				start = time.time()
 
+				x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = load_embeddings(label, selected_scenario, os.getcwd())
 
-				with open('BERT_per_sentence_' + label +  '_' + sc + '_save_embsnew.pickle', 'rb') as f:
-					#x_train_bert1, x_test_bert1, predictions_train, predictions_test, time_preprocess2 = pickle.load(f)
-					#x_train_bert_profile, x_test_bert_profile, x_train_bert1_077, x_test_bert1_077, time_preprocess2 = pickle.load(f)
-					#x_train_bert_profile, x_test_bert_profile, x_train_bert1_077, x_test_bert1_077, x_train_new, x_test_new, [total_calls_train, total_sent_train, total_calls_test, total_sent_test], time_preprocess2 = pickle.load(f)
-					x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = pickle.load(f)
-
-				f.close()
-
-				y_train_occ = occurence(x_train_new, y_train_new)
+				y_train_occ = occurence(x_train_new, y_train_new, label)
 				x_train_tf, x_test_tf = tfidf(x_train_new, y_train_new, x_test_new)
 				print(x_train_tf.shape)
-				y_train_edited = change_labels(y_train_occ)
-				y_test_edited =  change_labels(y_test_new)
+				y_train_edited = change_labels(y_train_occ, label)
+				y_test_edited =  change_labels(y_test_new,  label)
 				
-				#lea = SVC(kernel='linear')
-				#lea = LinearSVC()
-				#lea = RF(random_state = 23)
-				lea = LogisticRegression()
-				#lea = Grad()
-				#lea = ADA()
-				learner = 'LR' #Grad' #SVC' # LR' #'linearSVC'
+				lea = SVC(kernel='linear')
+				learner = 'SVC'
+
+				predictions =  train_classifier(lea, x_train_tf, y_train_edited, x_test_tf, y_test_edited)
+
+
+				end = time.time()
+				time_execution = (np.round(end - start,3))
+
+				rest_information = [x_train_tf.shape, x_test_tf.shape, learner]
+
+				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\WSL-baseline')
+				save_results(mode, label, selected_scenario, y_test_edited, predictions, time_execution, threshold = [],  rest_information = rest_information)
+
+
+
 			
 			elif mode == 'mode3' or mode == 'mode4':
 				

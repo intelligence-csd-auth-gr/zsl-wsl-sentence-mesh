@@ -545,6 +545,20 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 
 		return
 
+	elif mode == 1:
+
+		f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
+		f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
+		accuracy.append(acc(y_test_edited, predictions))
+		prec.append(precision_score(y_test_edited, predictions))
+		rec.append(recall_score(y_test_edited, predictions))
+		exec_time.append(time_execution)
+		
+		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time)), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)']) 
+		df.to_csv('SETN2020_DCbioSentenceMax_results_' + label + '_' + scenario + '.csv')
+
+		return
+
 	for th in threshold:
 				
 				start1 = time.time()
@@ -708,6 +722,17 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 		f.close()
 
 	return 
+
+def load_embeddings(label, selected_scenario, path):
+
+
+		os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence')
+		with open('bioBERT_profile_per_sentence_' + label + '_' + selected_scenario + '.pickle', 'rb') as f:
+				x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = pickle.load(f)
+		f.close()
+		os.chdir(path)
+		return x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2
+
 #%%
 ##################################################################################################
 
@@ -824,15 +849,42 @@ def main(mesh, alg, scenario, path):
 				continue
 
 
-			if mode == 1:
+			elif mode == 1:
 			
 				# on the fly evaluation by cosine similarity
 
-				with open('bioBERT_profile_per_sentence_' + label + '_' + selected_scenario + '.pickle', 'rb') as f:
-					x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = pickle.load(f)
+				biobert = BiobertEmbedding()
+				th = 0.77
+				start = time.time()
+
+				x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = load_embeddings(label, selected_scenario, os.getcwd())
+
+				y_test_edited = change_labels(y_test_new, label)
+
+				label_emb= np.array(torch.stack(biobert.word_vector(label)))[0]
+				df_test, x_test_new_export, total_calls_train, total_sent_train, x_test_old, reject_test =  my_predictor_save(biobert, x_test_new, label_emb)
+				print(x_test_new_export[0][0:10], '\n', x_test_old[0][0:10], '\n', x_test_new[0][0:10])
+
+				predictions = [0 for i in range(len(x_test_new_export))]
+				c = 0
+				for _ in df_test.keys():
+					if max(df_test[_]) > th:
+						predictions[c] = 1
+					c+=1
+
+				end = time.time()
+				time_execution = (np.round(end - start,3))
+
+				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\DCbio-SentenceMax')
+				save_results(mode, label, selected_scenario, y_test_edited, predictions, time_execution)
+
+				print('Saving pickles for tuning stage... ')
+				with open('SETN2020_DCbioSentenceMax_results_' + label + '_' + selected_scenario + '.pickle', 'wb') as f:
+					pickle.dump([df_test, y_test_edited], f)
 				f.close()
 
-				y_test_edited = change_labels(y_test_new)
+				os.chdir(path)
+
 			
 			elif mode == 'mode2':
 			

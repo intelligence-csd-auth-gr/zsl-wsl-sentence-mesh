@@ -443,7 +443,7 @@ def my_predictor_save(biobert, x, label_emb):
 	return df, t_new, total_calls, total_sent, x, reject
 	#return y_pred, df, reject, x
 #%%
-def augment_y_with_embeddings_max(biobert, label_embedding, x_train, y_train, command, threshold, qx = None):
+def augment_y_with_embeddings_max(biobert, label, label_embedding, x_train, y_train, command, threshold, qx = None):
  
 	#label_embedding= np.array(torch.stack(biobert.word_vector(label)))
 	#print('1: ',label_embedding.shape, '2: ', x_train[0].shape)
@@ -471,7 +471,7 @@ def augment_y_with_embeddings_max(biobert, label_embedding, x_train, y_train, co
 
 					# without th
 					if(x_train[th][i]>th):
-							y.append( y_train[i]+"#"+label )
+							y.append( y_train[i]+"#"+label)
 							counter += 1
 					else:
 							y.append( y_train[i] )
@@ -579,183 +579,108 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 		df.to_csv('SETN2020_WSL-baseline_results_' + label + '_' + scenario + '_' + learner + '.csv')
 
 		return
-
-
-
-
-	for th in threshold:
 				
-				start1 = time.time()
+	
+
+	elif mode == 3 or mode == 4:
+		
+		space = rest_information[0]
+		reject_th = rest_information[1]
+		lea = rest_information[6]
+		learner = rest_information[7]
+		time_preprocess1 = rest_information[8]
+		time_preprocess2 = rest_information[9]
+
+		for _ in space:
 				
-				if mode == 'mode1':
-					
-					#predictions = my_predictor(biobert, x_test, th)
-					#label_emb = np.array(biobert.sentence_vector(label))
-					label_emb= np.array(torch.stack(biobert.word_vector(label)))[0]
-					#predictions = my_predictor_per_sentence(biobert,x_test, label_emb, th)
-					#predictions, ddf1 = my_predictor_save(biobert, x_test, label_emb, th)
-					#predictions, ddf1, x_train_new, total_calls_train, total_sent_train = my_predictor_save(biobert, x_test_new, label_emb, th)
-					df_test, x_test_new_export, total_calls_train, total_sent_train, x_test_old, reject_test =  my_predictor_save(biobert, x_test_new, label_emb)
+			if _ in reject_th:
 
-					print(x_test_new_export[0][0:10], '\n' , x_test_old[0][0:10], '\n', x_test_new[0][0:10])
-					predictions = [0 for i in range(len(x_test_new_export))]
-					c = 0
-					for _ in df_test.keys():
-						if max(df_test[_]) > th:
-							predictions[c] = 1
-						c+=1
-
-					
-					#y_test_edited = y_test_edited1
+				f1_macro.append(-1)
+				f1_weighted.append(-1)
+				accuracy.append(-1)
+				prec.append(-1)
+				rec.append(-1)
+				exec_time.append(-1)
+				continue
 
 
-				elif mode == 'mode2':
-				 
-					predictions =  train_classifier(lea, x_train_tf, y_train_edited, x_test_tf, y_test_edited)
-					#y_test_edited = y_test_edited2
-
-				else:
-
-						if mode == 'mode3':
-									
-									# cosine similarity + classifier (embeddings transformed) 
-									#y_train_bert, reject_th = augment_y_with_embeddings(biobert, label, x_train_bert, y_train, 2, threshold = np.arange(0.65, 0.86, 0.01))
-									y_train_bert, reject_th = augment_y_with_embeddings_max(biobert, label_emb, x_train_bert1, y_train_new, 2, threshold = threshold)#np.arange(0.65, 0.91, 0.01))
-									#print(y_train_bert)
-									#break
-
-						elif mode == 'mode4':
-									
-									# cosine similarity + classifier (tfidf transformed) 
-									#y_train_mode4, reject_th = augment_y_with_embeddings(biobert, label, x_train_bert, y_train, 2, threshold = np.arange(0.65, 0.86, 0.01))
-									#print(x_train_bert1)
-									y_train_mode4, reject_th = augment_y_with_embeddings_max(biobert, label_emb, x_train_bert1, y_train_new, 2, threshold = threshold)#np.arange(0.65, 0.91, 0.01))
-									#print(y_train_mode4.keys())
-									#x_train_tf, x_test_tf = tfidf(x_train, y_train_mode4, x_test)
-									#y_train_edited =  change_labels(y_train_mode4)
-						else:
-							continue
+			start = time.time()
 
 
-						print("rej ",reject_th)
-						#print(y_train_bert.keys(), y_train_bert[0.65], len(y_train_bert[0.65]))
-						
-						y_test_edited3 =  change_labels(y_test_new)
-						print('test: ', len(y_test))
-						#lea = SVC(kernel='linear' , C = 10 ,  probability = True)
-						#lea = SVC(kernel = 'linear')
-						lea = LinearSVC()
-						#lea = RF()
-						#lea = LogisticRegression()
-						#lea = Grad()
-						#lea = KNN(n_neighbors = 1)
-						#lea = ADA()
-						learner = 'linearSVC_range' #c_10_prob' #1nn' #RF' #Grad' #'SVC_tuned' # LR' 'linearSVC'
+			if mode == 3:
 
-						for _ in threshold:#np.arange(0.70, 0.81, 0.01):
-										
-										if _ in reject_th:
-											#print(set(change_labels(y_train_bert[_])))
-						
-											f1_macro.append(-1)
-											f1_weighted.append(-1)
-											accuracy.append(-1)
-											prec.append(-1)
-											rec.append(-1)
-											exec_time.append(-1)
-						
-											continue
-										start3 = time.time()
+				x_train_bert = rest_information[2]
+				y_train_bert = rest_information[3]
+				x_test_bert = rest_information [4]
+				y_test_edited = rest_information[5]
 
-										if mode == 'mode3':
-													
-													y_train_edited = change_labels(y_train_bert[_])
-													#print(y_train_bert[_] , y_train_edited)
-													print(len(x_train_bert), len(y_train_edited), len(x_test_bert), len(y_test_edited3))
-													#print(x_train_bert[0].shape, y_train_edited)
-													predictions =  train_classifier(lea, x_train_bert, y_train_edited, x_test_bert, y_test_edited3)
-													y_test_edited = y_test_edited3
-													#print(y_train_edited, y_test_edited)
-													#print('here')
-													
-										elif mode == 'mode4':
-													
-													#print(_, len(x_train), len(y_train_mode4[_]) , len(x_test))
-													x_train_tf, x_test_tf = tfidf(x_train_new, y_train_mode4[_], x_test_new)
-													y_train_edited =  change_labels(y_train_mode4[_])
-													predictions =  train_classifier(lea, x_train_tf, y_train_edited, x_test_tf, y_test_edited3)
-													y_test_edited = y_test_edited3
 
-										f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
-										f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
-										accuracy.append(acc(y_test_edited, predictions))
-										prec.append(precision_score(y_test_edited, predictions))
-										rec.append(recall_score(y_test_edited, predictions))
+				approach = 'WDCbio(bioBERT)'
 
-										end = time.time()
-										exec_time.append((end - start3) + time_preprocess1 + time_preprocess2)
-										print('time: ', exec_time[-1])
+				y_train_edited = change_labels(y_train_bert[_], label)
+				predictions =  train_classifier(lea, x_train_bert, y_train_edited, x_test_bert, y_test_edited)
+			
+			
+			elif mode == 4:
 
-				if mode == 'mode3' or mode == 'mode4':
-					break
-				# evaluation
+				x_train_new = rest_information[2]
+				x_test_new = rest_information[3]
+				y_train_mode4 = rest_information [4]
+				y_test_edited = rest_information[5]
 
-				f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
-				f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
-				accuracy.append(acc(y_test_edited, predictions))
-				prec.append(precision_score(y_test_edited, predictions))
-				rec.append(recall_score(y_test_edited, predictions))
+				approach = 'WDCbio(tfidf)'
 
-				end = time.time()
-				exec_time.append((end - start1))
-				print('time: ', exec_time[-1])
-				#exp.log_metric('f1_macro', f1_macro[-1])
-				#exp.log_metric('f1_weighted', f1_weighted[-1])
-				#exp.log_metric('accuracy', accuracy[-1])
-				#exp.log_metric('precision' , prec[-1])
-				#exp.log_metric('recall' , rec[-1])
-				#exp.log_metric('time (sec)' , exec_time[-1]) 
-				if mode == 'mode2':
-					break
+				x_train_tf, x_test_tf = tfidf(x_train_new, y_train_mode4[_], x_test_new)
+				y_train_edited =  change_labels(y_train_mode4[_], label)
+				predictions =  train_classifier(lea, x_train_tf, y_train_edited, x_test_tf, y_test_edited)
 
-	if mode != 'save_embs' :
 
-		print('Saving stage...')
-		if mode == 'mode2':
-			df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time, [x_train_tf.shape], [x_test_tf.shape])), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)', 'shape train data', 'shape test data']) 
-		else:
-			df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time)), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)']) 
+			f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
+			f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
+			accuracy.append(acc(y_test_edited, predictions))
+			prec.append(precision_score(y_test_edited, predictions))
+			rec.append(recall_score(y_test_edited, predictions))
 
-	
-	if mode != 'mode1' and mode != 'furn':
-	
-		df.to_csv('single_results_' + label + '_' + sc + '_' + mode + '_' + learner + '.csv')
+			end = time.time()
+			exec_time.append((end - start) + time_preprocess1 + time_preprocess2)
+			print('time: ', exec_time[-1])
+
+		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time)), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)']) 
+
+		df.to_csv('SETN2020_' + approach + '_results_' + label + '_' + scenario + '_' + learner + '.csv')
+
+		return
+
 
 	else:
 
-		df.to_csv('single_results_' + label + '_' + sc + '_' + mode +  '.csv')
+		print('No available mode!!')
+		return
 
-
-	if mode == 'mode1':
-
-		#df.to_csv('single_results_' + label + '_' + sc + '_' + mode +  '.csv')
-
-		print('Saving pickles ... ')
-		with open('results_' + label + '_' + sc + '_' + mode + '.pickle', 'wb') as f:
-				pickle.dump([df_test, y_test_edited], f)
-		f.close()
-
-	return 
 
 def load_embeddings(label, selected_scenario, path):
 
 
 		os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence')
+
 		with open('bioBERT_profile_per_sentence_' + label + '_' + selected_scenario + '.pickle', 'rb') as f:
 				x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = pickle.load(f)
 		f.close()
 		os.chdir(path)
+
 		return x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2
+
+def load_embeddings_values(label, selected_scenario, path):
+
+
+		os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings')
+
+		with open("bioBERTemb_" + selected_scenario + '_' + label + '.pickle' , 'rb') as f:
+					x_train_bert, x_test_bert, time_preprocess1, x_train_new, x_test_new, y_train_new, y_test_new = pickle.load(f)
+		f.close()
+		os.chdir(path)
+
+		return x_train_bert, x_test_bert, time_preprocess1, x_train_new, x_test_new, y_train_new, y_test_new 
 
 #%%
 ##################################################################################################
@@ -940,47 +865,56 @@ def main(mesh, alg, scenario, path):
 
 
 			
-			elif mode == 'mode3' or mode == 'mode4':
+			elif mode == 3 or mode == 4:
 				
+				biobert = BiobertEmbedding()
+
 				# use Embeddings
 				
-				#x_train_bert = get_embeddings(biobert, x_train)
-				#x_test_bert  = get_embeddings(biobert, x_test)
+				th = [0.77]
+				space = np.arange(0.65, 0.91, 0.01)
 
+				lea = SVC(kernel = 'linear')
+				learner = 'SVC_range'
 				# here x_train_bert and x_test_bert are loaded, containing the embedding of the total instance (e.g. 1998 vectors of (768,) )
-				with open('BERTemb_' + sc +  '_' + label + 'new.pickle', 'rb') as f:
-					#x_train_bert, x_test_bert, time_preprocess1 = pickle.load(f)
-					x_train_bert, x_test_bert, time_preprocess1, x_train_new1, x_test_new1, y_train_new1, y_test_new1 = pickle.load(f)
-				f.close()
+				x_train_bert, x_test_bert, time_preprocess1, x_train_new1, x_test_new1, y_train_new1, y_test_new1  = load_embeddings_values(label, selected_scenario, path)
 
 				# here x_train_bert and x_test_bert are loaded, containing the embedding profile of the total instance into lists, as well as the computed y values fot th = 0.77
+				x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = load_embeddings(label, selected_scenario, os.getcwd())
 
-				with open('BERT_per_sentence_' + label +  '_' + sc + '_save_embsnew.pickle', 'rb') as f:
-					#x_train_bert1, x_test_bert1, predictions_train, predictions_test, time_preprocess2 = pickle.load(f)
-					#x_train_bert_profile, x_test_bert_profile, x_train_bert1_077, x_test_bert1_077, time_preprocess2 = pickle.load(f)
-					#x_train_bert_profile, x_test_bert_profile, x_train_bert1_077, x_test_bert1_077, x_train_new, x_test_new, [total_calls_train, total_sent_train, total_calls_test, total_sent_test], time_preprocess2 = pickle.load(f)
-					x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = pickle.load(f)
-
-				f.close()
 				
-				#print(type(x_train_bert_profile))
-				#print(x_train_bert_profile.keys())
+				#start = time.time()
 				print(len(x_train_bert_profile) , len(x_test_bert_profile))
-				x_train_bert1 = my_predictor_per_sentence_max_loaded_embs(x_train_bert_profile, threshold = threshold)
-				x_test_bert1 = my_predictor_per_sentence_max_loaded_embs(x_test_bert_profile, threshold = threshold)
+				
+				x_train_bert1 = my_predictor_per_sentence_max_loaded_embs(x_train_bert_profile, threshold = space)
+				x_test_bert1 = my_predictor_per_sentence_max_loaded_embs(x_test_bert_profile, threshold = space)
 
-				label_emb= np.array(torch.stack(biobert.word_vector(label)))[0]
-				#x_train_bert1 = my_predictor_per_sentence_max(biobert, x_train, label_emb, threshold )
-				#x_test_bert1 = my_predictor_per_sentence_max(biobert, x_test, label_emb, threshold  )
+				label_emb = np.array(torch.stack(biobert.word_vector(label)))[0]
 
-				#print(len(x_train_bert), len(x_test_bert), len(x_train_bert1), len(x_test_bert1), x_train_bert[0].shape,)# x_train_bert1)
-				#print('here1')
-				#break
+				y_test_edited =  change_labels(y_test_new, label)
 
-			#elif mode == 'mode4':
-				# read Emdeddings
-				#prepared_test_embeddings  = pd.read_csv('x_test_embedding_file.csv')
-				#prepared_train_embeddings = pd.read_csv('x_train_embedding_file.csv')
+				if mode == 3:
+					# cosine similarity + classifier (embeddings transformed) 
+					y_train_bert, reject_th = augment_y_with_embeddings_max(biobert, label, label_emb, x_train_bert1, y_train_new, 2, threshold = space)
+					new_path = r'C:\Users\stam\Documents\git\Amulet-Setn\WDCbio(bioBERT)'
+					rest_information = [space, reject_th, x_train_bert, y_train_bert, x_test_bert, y_test_edited, lea, learner, time_preprocess1, time_preprocess2]
+
+				else:
+					# cosine similarity + classifier (tfidf transformed) 
+					y_train_mode4, reject_th = augment_y_with_embeddings_max(biobert, label, label_emb, x_train_bert1, y_train_new, 2, threshold = space)
+					new_path = r'C:\Users\stam\Documents\git\Amulet-Setn\WDCbio(tfidf)'
+					rest_information = [space, reject_th, x_train_new, x_test_new, y_train_mode4, y_test_edited, lea, learner, time_preprocess1, time_preprocess2]
+
+
+
+				print("rej ", reject_th)
+		
+				print('test: ', len(y_test))
+
+				os.chdir(new_path)
+				save_results(mode, label, selected_scenario, y_test_edited, [], 0, rest_information = rest_information)
+
+
 			elif mode == 5:
 
 				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence')

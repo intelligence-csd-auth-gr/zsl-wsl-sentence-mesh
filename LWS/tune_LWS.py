@@ -176,35 +176,35 @@ def manipulate_on_instance_level(ddf1, saveplot = False):
     return df
 
 
-def check():
+# def check():
 
-    #%% plots of distributions
-    df_max = manipulate_on_sentence_level(ddf1)
-    df = manipulate_on_instance_level(ddf1)
+# 	#%% plots of distributions
+# 	#df_max = manipulate_on_sentence_level(ddf1)
+# 	#df = manipulate_on_instance_level(ddf1)
 
 
-    #%% gmms
+#     #%% gmms
 
-    from matplotlib.colors import LogNorm
-    from sklearn import mixture
-    from sklearn.metrics import confusion_matrix
+#     from matplotlib.colors import LogNorm
+#     from sklearn import mixture
+#     from sklearn.metrics import confusion_matrix
 
-    # fit a Gaussian Mixture Model with two components
-    clf = mixture.GaussianMixture(n_components=2, covariance_type='full', init_params = 'kmeans')
-    X = df.max_similarity_total
-    X_train = np.array(X)
-    clf.fit(X_train.reshape(-1,1))
+#     # fit a Gaussian Mixture Model with two components
+#     clf = mixture.GaussianMixture(n_components=2, covariance_type='full', init_params = 'kmeans')
+#     X = df.max_similarity_total
+#     X_train = np.array(X)
+#     clf.fit(X_train.reshape(-1,1))
 
-    print(clf.means_)
+#     print(clf.means_)
 
-    X_test = df_max.max_similarity
-    #clf.predict(np.array(X_test).reshape(-1,1))
-    #clf.predict(np.array(X_test).reshape(-1,1)) == df_max.label
-    np.count_nonzero( clf.predict(np.array(X_test).reshape(-1,1)) == df_max.label )
+#     X_test = df_max.max_similarity
+#     #clf.predict(np.array(X_test).reshape(-1,1))
+#     #clf.predict(np.array(X_test).reshape(-1,1)) == df_max.label
+#     np.count_nonzero( clf.predict(np.array(X_test).reshape(-1,1)) == df_max.label )
 
-    confusion_matrix(np.array(df_max.label), clf.predict(np.array(X_test).reshape(-1,1)))
+#     confusion_matrix(np.array(df_max.label), clf.predict(np.array(X_test).reshape(-1,1)))
 
-    return
+#     return
 #%%		
 path = r'C:\Users\stam\Documents\git\Amulet-Setn\LWS'   
 os.chdir(path)
@@ -213,6 +213,7 @@ names = [ 'density_Biomineralization_train_ratio_1_1_test_ratio' , 'density_Chlo
 mesh = ["Biomineralization" , "Chlorophyceae" , "Cytoglobin"]
 
 #names = names[1:2]
+name = names[1]
 for name in names:
     space =  np.arange(0.65, 0.91, 0.01)
     
@@ -225,6 +226,16 @@ for name in names:
     
     export_tuned_results(space, y_test_edited, True)
 
+#%%
+#simulated_max['0.77'][0:10] == predictions[0:10]
 
-# simulated_max['0.77'][0:10] == predictions[0:10]
+
+# bio 
+predictions = simulated_max['0.81']
+
+
+# cyto & chloro
+predictions = simulated_max['0.8']
+
+print(confusion_matrix(y_test_edited, predictions))
 

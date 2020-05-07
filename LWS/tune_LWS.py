@@ -204,20 +204,20 @@ def check():
 
     confusion_matrix(np.array(df_max.label), clf.predict(np.array(X_test).reshape(-1,1)))
 
-
+    return
 #%%		
 path = r'C:\Users\stam\Documents\git\Amulet-Setn\LWS'   
 os.chdir(path)
 
-names = [ 'density_Biomineralization_train_ratio_1_1_test_ratio_mixed_furnnew' , 'density_Chlorophyceae_train_ratio_1_1_test_ratio_mixed_furnnew' , 'density_Cytoglobin_train_ratio_1_1_test_ratio_mixed_furnnew']
+names = [ 'density_Biomineralization_train_ratio_1_1_test_ratio' , 'density_Chlorophyceae_train_ratio_1_1_test_ratio' , 'density_Cytoglobin_train_ratio_1_1_test_ratio']
 mesh = ["Biomineralization" , "Chlorophyceae" , "Cytoglobin"]
 
-names = names[1:2]
+#names = names[1:2]
 for name in names:
     space =  np.arange(0.65, 0.91, 0.01)
     
     with open(name + ".pickle", "rb") as f:
-    				density_funk, predictions, y_test_edited = pickle.load(f)
+    				density_funk, predictions, y_test_edited, time = pickle.load(f)
     
     simulated_max , simulated_mean, simulated_max3 = read_pickles(path, density_funk, cmax = 3, space = space)
     

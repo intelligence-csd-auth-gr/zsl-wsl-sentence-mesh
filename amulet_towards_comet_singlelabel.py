@@ -569,9 +569,13 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 		prec.append(precision_score(y_test_edited, predictions))
 		rec.append(recall_score(y_test_edited, predictions))
 		exec_time.append(time_execution)
+		tp, fp, fn, tn = confusion_matrix(y_test_edited, predictions).flatten()
+		print(tp, fp, fn, tn)
 
 
-		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time, [rest_information[0]], [rest_information[1]])), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)', 'shape train data', 'shape test data']) 
+
+		#print(list(f1_macro, f1_weighted, accuracy, prec, rec, exec_time, tp, fp [fn], [tn], [rest_information[0]], [rest_information[1]] ) )
+		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time, [tp], [fp], [fn], [tn], [rest_information[0]], [rest_information[1]] ) ), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)', 'tp', 'fp', 'fn', 'tn', 'shape train data', 'shape test data']) 
 		df.to_csv('SETN2020_WSL-baseline_results_' + label + '_' + scenario + '_' + learner + '.csv')
 
 		return

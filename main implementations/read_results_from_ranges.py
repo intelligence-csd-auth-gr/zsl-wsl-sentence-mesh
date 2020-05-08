@@ -6,15 +6,23 @@ Created on Sun Apr 19 17:03:26 2020
 """
 
 import os
-os.chdir(r'C:\Users\SpaceHorizon\OneDrive\auth\comet\official\mode 4 range')
 import numpy as np
 import pandas as pd
 
-labels = ["Biomineralization" , "Chlorophyceae" , "Cytoglobin"]
-scenario = ['train_ratio_1_4_test_ratio_mixed',  'train_ratio_1_1_test_ratio_mixed']
-learners = ['Grad' , 'SVC', 'linearSVC', 'LR']
+mode = 4
 
-space = np.arange(0.65, 0.91, 0.01)
+if mode == 3:
+    os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\WDCbio(bioBERT)')
+    text = 'mode_3_after_range.csv'
+else:
+    os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\WDCbio(tfidf)')
+    text = 'mode_4_after_range.csv'
+
+labels = ["Biomineralization" , "Chlorophyceae" , "Cytoglobin"]
+scenario = ['train_ratio_1_4_test_ratio',  'train_ratio_1_1_test_ratio']
+learners = ['SVC', 'LinearSVC', 'LR']
+
+space = np.arange(0.73, 0.83, 0.01)
 results = {}
 for i in os.listdir(os.getcwd()):
     for lea in learners:
@@ -30,5 +38,6 @@ for i in os.listdir(os.getcwd()):
                             y = x.f1_macro
                             results[lea + '_' + label + '_' + sc] = [y.max(), space[y.idxmax()]]
 
-os.chdir(r'C:\Users\SpaceHorizon\OneDrive\auth\comet')
-pd.DataFrame.from_dict(results).to_csv('mode_4_after_range.csv')
+
+#os.chdir(r'C:\Users\SpaceHorizon\OneDrive\auth\comet')
+pd.DataFrame.from_dict(results).to_csv(text)

@@ -570,11 +570,8 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 		rec.append(recall_score(y_test_edited, predictions))
 		exec_time.append(time_execution)
 		tp, fp, fn, tn = confusion_matrix(y_test_edited, predictions).flatten()
-		print(tp, fp, fn, tn)
 
 
-
-		#print(list(f1_macro, f1_weighted, accuracy, prec, rec, exec_time, tp, fp [fn], [tn], [rest_information[0]], [rest_information[1]] ) )
 		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time, [tp], [fp], [fn], [tn], [rest_information[0]], [rest_information[1]] ) ), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)', 'tp', 'fp', 'fn', 'tn', 'shape train data', 'shape test data']) 
 		df.to_csv('SETN2020_WSL-baseline_results_' + label + '_' + scenario + '_' + learner + '.csv')
 
@@ -590,6 +587,8 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 		learner = rest_information[7]
 		time_preprocess1 = rest_information[8]
 		time_preprocess2 = rest_information[9]
+
+		tps, fps, fns, tns = [], [], [], []
 
 		for _ in space:
 				
@@ -635,18 +634,24 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 				predictions =  train_classifier(lea, x_train_tf, y_train_edited, x_test_tf, y_test_edited)
 
 
+			end = time.time()
+			exec_time.append((end - start) + time_preprocess1 + time_preprocess2)
+			print('time: ', exec_time[-1])
+
 			f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
 			f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
 			accuracy.append(acc(y_test_edited, predictions))
 			prec.append(precision_score(y_test_edited, predictions))
 			rec.append(recall_score(y_test_edited, predictions))
+			tp, fp, fn, tn = confusion_matrix(y_test_edited, predictions).flatten()
+			tps.append(tp)
+			fps.append(fp)
+			fns.append(fn)
+			tns.append(tn)
 
-			end = time.time()
-			exec_time.append((end - start) + time_preprocess1 + time_preprocess2)
-			print('time: ', exec_time[-1])
 
-		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time)), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)']) 
-
+		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time, tps, fps, fns, tns)), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)', 'tp', 'fp', 'fn', 'tn']) 
+		df.set_index(np.arange(0.73, 0.83, 0.01), inplace=True)
 		df.to_csv('SETN2020_' + approach + '_results_' + label + '_' + scenario + '_' + learner + '.csv')
 
 		return
@@ -849,6 +854,8 @@ def main(mesh, alg, scenario, path):
 				y_test_edited =  change_labels(y_test_new,  label)
 				
 				lea = SVC(kernel='linear')
+				#lea = LogisticRegression()
+
 				learner = 'SVC'
 
 				predictions =  train_classifier(lea, x_train_tf, y_train_edited, x_test_tf, y_test_edited)
@@ -872,10 +879,14 @@ def main(mesh, alg, scenario, path):
 				# use Embeddings
 				
 				th = [0.77]
-				space = np.arange(0.65, 0.91, 0.01)
+				space = np.arange(0.73, 0.83, 0.01)
 
-				lea = SVC(kernel = 'linear')
-				learner = 'SVC_range'
+				#lea = SVC(kernel = 'linear')
+				lea = LogisticRegression()
+				#lea = LinearSVC()
+				lea = Grad()
+
+				learner = 'GraD_range'
 				# here x_train_bert and x_test_bert are loaded, containing the embedding of the total instance (e.g. 1998 vectors of (768,) )
 				x_train_bert, x_test_bert, time_preprocess1, x_train_new1, x_test_new1, y_train_new1, y_test_new1  = load_embeddings_values(label, selected_scenario, path)
 
@@ -903,7 +914,7 @@ def main(mesh, alg, scenario, path):
 					# cosine similarity + classifier (tfidf transformed) 
 					y_train_mode4, reject_th = augment_y_with_embeddings_max(biobert, label, label_emb, x_train_bert1, y_train_new, 2, threshold = space)
 					new_path = r'C:\Users\stam\Documents\git\Amulet-Setn\WDCbio(tfidf)'
-					rest_information = [space, reject_th, x_train_new, x_test_new, y_train_mode4, y_test_edited, lea, learner, time_preprocess1, time_preprocess2]
+					rest_information = [space, reject_th, x_train_new, x_test_new, y_train_mode4, y_test_edited, lea, learner, 0, time_preprocess2]
 
 
 
@@ -955,7 +966,7 @@ if __name__ == "__main__":
 	random.seed(24)
 	
 	mesh = int(input('You have to select among our labels: \n1. Biomineralization \n2. Chlorophyceae \n3. Cytoglobin \n4. all of them\n\nYour answer: ... '))
-	alg = int(input('Choose which algorithm you want to run: \n1. DCbio(Sentence-max) \n2. Baseline of WSL \n3. WDCbio(tfidf) \n4. WDCbio(bioBERT) \n5. LWS\n6. Save Embeddings on Sentence Level\n7. Save Embeddings\nYour answer: ... '))
+	alg = int(input('Choose which algorithm you want to run: \n1. DCbio(Sentence-max) \n2. Baseline of WSL \n3. WDCbio(bioBERT) \n4. WDCbio(tfidf) \n5. LWS\n6. Save Embeddings on Sentence Level\n7. Save Embeddings\nYour answer: ... '))
 
 	scenario = int(input('Moreover, we need to knwo which sceraio based on ratio between train and test data you need to run: \n1. 1_1 \n2. 1_4\n3. both\n\nYour answer: ...'))
 

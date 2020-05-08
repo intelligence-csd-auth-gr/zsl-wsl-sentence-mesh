@@ -708,17 +708,14 @@ def main(mesh, alg, scenario, path):
 		sc = [scenario_input[scenario - 1]]
 
 	print(scenario, sc)
-	#alg = 'furn'
 	mode = alg
 
 	for label in labels:
 		
 		results = []
 		
-
 		# read datasets
 		
-		#print(os.listdir(os.getcwd()))
 		for selected_scenario in sc:
 
 			os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\raw data')
@@ -737,8 +734,6 @@ def main(mesh, alg, scenario, path):
 			# return to the main directory
 			os.chdir(path)
 
-
-
 			#x_test = x_test[0:2]
 			#y_test = y_test[0:2]
 			#x_train = x_train[0:20]
@@ -746,12 +741,7 @@ def main(mesh, alg, scenario, path):
 
 			print("Train: %d, Test: %d" %(len(y_train), len(y_test)))
 
-			threshold = np.arange(0.65, 0.91, 0.01) #[0.77]#[0.7714534135333784] #np.arange(0.65, 0.91, 0.01)
-
-			#accuracy, prec, rec, f1_macro, f1_weighted, exec_time = [], [], [], [], [], []
-			
-
-
+			#threshold = np.arange(0.65, 0.91, 0.01) #[0.77]#[0.7714534135333784] #np.arange(0.65, 0.91, 0.01)
 
 			if mode == 6:
 				
@@ -881,12 +871,9 @@ def main(mesh, alg, scenario, path):
 				th = [0.77]
 				space = np.arange(0.73, 0.83, 0.01)
 
-				#lea = SVC(kernel = 'linear')
-				lea = LogisticRegression()
-				#lea = LinearSVC()
-				lea = Grad()
+				lea = SVC(kernel = 'linear')
+				learner = 'SVC_range'
 
-				learner = 'GraD_range'
 				# here x_train_bert and x_test_bert are loaded, containing the embedding of the total instance (e.g. 1998 vectors of (768,) )
 				x_train_bert, x_test_bert, time_preprocess1, x_train_new1, x_test_new1, y_train_new1, y_test_new1  = load_embeddings_values(label, selected_scenario, path)
 

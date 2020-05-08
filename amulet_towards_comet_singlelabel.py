@@ -1,3 +1,17 @@
+# -*- coding: utf-8 -*-
+"""
+Implementation of the proposed Dataless and Weakly Supervised Learning algorithms as they are published on SETN2020 along with the corresponding baseline and the LWS algorithm, enriched with the bioBERT embeddings as it is described on:  
+
+@authors:
+Nikos Mylonas	myloniko@csd.auth.gr
+Stamatis Karlos	stkarlos@csd.auth.gr
+Grigorios Tsoumakas	greg@csd.auth.gr
+
+This work is part of AMULET research program funded by ...
+"""
+
+
+
 import os
 import random
 import re

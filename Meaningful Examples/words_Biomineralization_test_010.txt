@@ -1,0 +1,3 @@
+0.7723442316055298 osteogenesis
+0.7861183285713196 osteogenesis (DO)
+0.8062920570373535 supply. Distraction osteogenesis

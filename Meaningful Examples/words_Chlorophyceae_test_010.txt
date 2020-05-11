@@ -1,0 +1,3 @@
+0.7490283250808716 chitin.
+0.7747648358345032 shrimp Litopenaeus
+0.786859929561615 plasmid among Vibrio

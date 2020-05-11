@@ -1,0 +1,5 @@
+0.8685266971588135 Cytoglobin,
+0.8651012778282166 and Cytoglobin,
+0.8437379598617554 SURVIVIN and Cytoglobin,
+0.8108233213424683 and Cytoglobin, respectively.
+0.8263557553291321 Cytoglobin, respectively. Furthermore,

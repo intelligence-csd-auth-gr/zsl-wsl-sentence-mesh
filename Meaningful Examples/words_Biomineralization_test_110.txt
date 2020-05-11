@@ -1,0 +1,3 @@
+0.7699041962623596 chitin-binding
+0.7939939498901367 chitinous exoskeleton,
+0.8028506636619568 chitinous exoskeleton, with

@@ -714,7 +714,7 @@ def main(mesh, alg, scenario, path):
 	else:
 		labels = [mesh_input[mesh]]
 
-	scenario_input = ['train_ratio_1_1_test_ratio',  'train_ratio_1_3_test_ratio']
+	scenario_input = ['pos_neg_ratio_1_1',  'pos_neg_ratio_1_3']
 
 	if scenario == 3:
 		sc = scenario_input 
@@ -735,15 +735,20 @@ def main(mesh, alg, scenario, path):
 			os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\raw data')
 			print('Label: ', label, 'Scenario: ', selected_scenario)
 
-			if selected_scenario == 'train_ratio_1_1_test_ratio':
-				#pass
-				x_train,y_train = prepare_X_Y("mesh_2018_" + label.lower() + ".txt")
-				x_test,y_test   = prepare_X_Y("mesh_2019_" + label.lower()  + "_mixed.txt")
 
-			else :
+
+			x_train,y_train = prepare_X_Y("mesh_2018_" + label.lower() + '_' + selected_scenario + ".txt")
+			x_test, y_test  = prepare_X_Y("mesh_2019_" + label.lower() +  "_mixed.txt")
+
+			#if selected_scenario == 'pos_neg_ratio_1_1':
 				#pass
-				x_train,y_train = prepare_X_Y("mesh_2018_" + label.lower() + "1_to_3.txt")
-				x_test,y_test   = prepare_X_Y("mesh_2019_" + label.lower()  + "_mixed.txt")
+			#	x_train,y_train = prepare_X_Y("mesh_2018_" + label.lower() + '_' + selected_scenario + ".txt")
+			#	x_test, y_test  = prepare_X_Y("mesh_2019_" + label.lower() + '_' + selected_scenario + "_mixed.txt")
+
+			#else :
+				#pass
+			#	x_train,y_train = prepare_X_Y("mesh_2018_" + label.lower() + "1_to_3.txt")
+			#	x_test,y_test   = prepare_X_Y("mesh_2019_" + label.lower()  + "_mixed.txt")
 				#x_train,y_train = prepare_X_Y("new_" + label.lower() + "_2018_train.txt")
 
 			# return to the main directory
@@ -758,10 +763,12 @@ def main(mesh, alg, scenario, path):
 
 			#threshold = np.arange(0.65, 0.91, 0.01) #[0.77]#[0.7714534135333784] #np.arange(0.65, 0.91, 0.01)
 
+			if mode != 2:
+					biobert = BiobertEmbedding()
+
+
 			if mode == 6:
 				
-				biobert = BiobertEmbedding()
-
 				print('\n****reduce time mode****\n')
 
 				start_emb = time.time()
@@ -782,7 +789,6 @@ def main(mesh, alg, scenario, path):
 
 			elif mode == 7:
 				# use Embeddings
-				biobert = BiobertEmbedding()
 
 				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence')
 
@@ -812,7 +818,6 @@ def main(mesh, alg, scenario, path):
 			
 				# on the fly evaluation by cosine similarity
 
-				biobert = BiobertEmbedding()
 				th = 0.77
 				start = time.time()
 
@@ -879,8 +884,6 @@ def main(mesh, alg, scenario, path):
 			
 			elif mode == 3 or mode == 4:
 				
-				biobert = BiobertEmbedding()
-
 				# use Embeddings
 				
 				th = [0.77]
@@ -936,8 +939,6 @@ def main(mesh, alg, scenario, path):
 				f.close()
 				os.chdir(path)
 
-				biobert = BiobertEmbedding()
-
 				start = time.time()
 
 				label_emb= np.array(torch.stack(biobert.word_vector(label)))[0]
@@ -960,7 +961,6 @@ def main(mesh, alg, scenario, path):
 
 
 
-
 if __name__ == "__main__":
 	
 	print('Welcome to AMULET-SETN repo!!')
@@ -970,7 +970,7 @@ if __name__ == "__main__":
 	mesh = int(input('You have to select among our labels: \n1. Biomineralization \n2. Chlorophyceae \n3. Cytoglobin \n4. all of them\n\nYour answer: ... '))
 	alg = int(input('Choose which algorithm you want to run: \n1. DCbio(Sentence-max) \n2. Baseline of WSL \n3. WDCbio(bioBERT) \n4. WDCbio(tfidf) \n5. LWS\n6. Save Embeddings on Sentence Level\n7. Save Embeddings\nYour answer: ... '))
 
-	scenario = int(input('Moreover, we need to knwo which sceraio based on ratio between train and test data you need to run: \n1. 1_1 \n2. 1_3\n3. both\n\nYour answer: ...'))
+	scenario = int(input('Moreover, we need to know which scenario based on ratio between postive and negative data you need to run, train_test_ratio equals to: ...\n1. 1_1 \n2. 1_3\n3. both\n\nYour answer: ...'))
 
 	
 	main(mesh, alg, scenario, os.getcwd())

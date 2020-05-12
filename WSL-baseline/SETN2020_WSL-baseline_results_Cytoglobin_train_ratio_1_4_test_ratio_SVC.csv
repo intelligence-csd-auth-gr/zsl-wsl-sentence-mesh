@@ -1,2 +1,0 @@
-,f1_macro,f1_weighted,accuracy,prec,rec,execution_time(sec),tp,fp,fn,tn,shape train data,shape test data
-0,0.9139281071439369,0.9377929980177703,0.9406392694063926,1.0,0.7636363636363637,1.626,164,0,13,42,"(2010, 26243)","(219, 26243)"

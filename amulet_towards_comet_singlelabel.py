@@ -714,7 +714,7 @@ def main(mesh, alg, scenario, path):
 	else:
 		labels = [mesh_input[mesh]]
 
-	scenario_input = ['train_ratio_1_1_test_ratio',  'train_ratio_1_4_test_ratio']
+	scenario_input = ['train_ratio_1_1_test_ratio',  'train_ratio_1_3_test_ratio']
 
 	if scenario == 3:
 		sc = scenario_input 
@@ -742,10 +742,9 @@ def main(mesh, alg, scenario, path):
 
 			else :
 				#pass
-				#x_train,y_train = prepare_X_Y("mesh_2018_" + label.lower() + "1_to_4.txt")
-				#x_test,y_test   = prepare_X_Y("mesh_2019_" + label.lower()  + "_mixed.txt")
-				x_train,y_train = prepare_X_Y("new_" + label.lower() + "_2018_train.txt")
+				x_train,y_train = prepare_X_Y("mesh_2018_" + label.lower() + "1_to_3.txt")
 				x_test,y_test   = prepare_X_Y("mesh_2019_" + label.lower()  + "_mixed.txt")
+				#x_train,y_train = prepare_X_Y("new_" + label.lower() + "_2018_train.txt")
 
 			# return to the main directory
 			os.chdir(path)
@@ -971,10 +970,7 @@ if __name__ == "__main__":
 	mesh = int(input('You have to select among our labels: \n1. Biomineralization \n2. Chlorophyceae \n3. Cytoglobin \n4. all of them\n\nYour answer: ... '))
 	alg = int(input('Choose which algorithm you want to run: \n1. DCbio(Sentence-max) \n2. Baseline of WSL \n3. WDCbio(bioBERT) \n4. WDCbio(tfidf) \n5. LWS\n6. Save Embeddings on Sentence Level\n7. Save Embeddings\nYour answer: ... '))
 
-	scenario = int(input('Moreover, we need to knwo which sceraio based on ratio between train and test data you need to run: \n1. 1_1 \n2. 1_4\n3. both\n\nYour answer: ...'))
-
-	#labels = ["Biomineralization", "Chlorophyceae" , "Cytoglobin"]
-	#labels = ["Chlorophyceae"]
+	scenario = int(input('Moreover, we need to knwo which sceraio based on ratio between train and test data you need to run: \n1. 1_1 \n2. 1_3\n3. both\n\nYour answer: ...'))
 
 	
 	main(mesh, alg, scenario, os.getcwd())

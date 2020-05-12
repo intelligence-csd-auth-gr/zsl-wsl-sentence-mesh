@@ -742,7 +742,9 @@ def main(mesh, alg, scenario, path):
 
 			else :
 				#pass
-				x_train,y_train = prepare_X_Y("mesh_2018_" + label.lower() + "1_to_4.txt")
+				#x_train,y_train = prepare_X_Y("mesh_2018_" + label.lower() + "1_to_4.txt")
+				#x_test,y_test   = prepare_X_Y("mesh_2019_" + label.lower()  + "_mixed.txt")
+				x_train,y_train = prepare_X_Y("new_" + label.lower() + "_2018_train.txt")
 				x_test,y_test   = prepare_X_Y("mesh_2019_" + label.lower()  + "_mixed.txt")
 
 			# return to the main directory

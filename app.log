@@ -1,0 +1,60 @@
+2020-05-11 22:03:11,949 loading vocabulary file C:\Users\stam\Documents\git\Amulet-Setn\biobert_v1.1_pubmed_pytorch_model\vocab.txt
+2020-05-11 22:03:11,969 loading archive file C:\Users\stam\Documents\git\Amulet-Setn\biobert_v1.1_pubmed_pytorch_model from cache at C:\Users\stam\Documents\git\Amulet-Setn\biobert_v1.1_pubmed_pytorch_model
+2020-05-11 22:03:11,969 Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "type_vocab_size": 2,
+  "vocab_size": 28996
+}
+
+2020-05-11 22:03:13,109 Initialization Done !!
+2020-05-11 22:03:13,259 Summing last 4 layers for each token
+2020-05-11 22:03:13,259 ['biomineralization']
+2020-05-11 22:03:13,259 Shape of Word Embeddings = 1
+2020-05-11 22:03:37,564 loading vocabulary file C:\Users\stam\Documents\git\Amulet-Setn\biobert_v1.1_pubmed_pytorch_model\vocab.txt
+2020-05-11 22:03:37,585 loading archive file C:\Users\stam\Documents\git\Amulet-Setn\biobert_v1.1_pubmed_pytorch_model from cache at C:\Users\stam\Documents\git\Amulet-Setn\biobert_v1.1_pubmed_pytorch_model
+2020-05-11 22:03:37,585 Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "type_vocab_size": 2,
+  "vocab_size": 28996
+}
+
+2020-05-11 22:03:38,715 Initialization Done !!
+2020-05-11 22:03:38,978 Summing last 4 layers for each token
+2020-05-11 22:03:38,978 ['chlorophyceae']
+2020-05-11 22:03:38,978 Shape of Word Embeddings = 1
+2020-05-11 22:04:06,745 loading vocabulary file C:\Users\stam\Documents\git\Amulet-Setn\biobert_v1.1_pubmed_pytorch_model\vocab.txt
+2020-05-11 22:04:06,766 loading archive file C:\Users\stam\Documents\git\Amulet-Setn\biobert_v1.1_pubmed_pytorch_model from cache at C:\Users\stam\Documents\git\Amulet-Setn\biobert_v1.1_pubmed_pytorch_model
+2020-05-11 22:04:06,766 Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "type_vocab_size": 2,
+  "vocab_size": 28996
+}
+
+2020-05-11 22:04:07,918 Initialization Done !!
+2020-05-11 22:04:08,029 Summing last 4 layers for each token
+2020-05-11 22:04:08,029 ['cytoglobin']
+2020-05-11 22:04:08,029 Shape of Word Embeddings = 1

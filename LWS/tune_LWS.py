@@ -72,44 +72,41 @@ def read_pickles(path, df, cmax, space = np.arange(0.65, 0.91, 0.01)):
 		return  simulated_max , simulated_mean, simulated_max3
 
 def export_tuned_results(space, y_test_edited, export_csv = False):
-    
-    dd = {}
-    for metric in ['max','mean','max3']:
-    		
-    		dd['metric=' + metric] = {}
-    		accuracy, prec, rec, f1_macro, f1_weighted = [], [], [], [], []
-    		if metric == 'max':
-    				simulated = simulated_max
-    		elif metric == 'mean':
-    				simulated = simulated_mean
-    		else:
-    				simulated = simulated_max3
-    		
-    		for th1 in space:
-    				predictions = np.array(simulated[str(np.round(th1,2))])
-    				f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
-    				f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
-    				accuracy.append(acc(y_test_edited, predictions))
-    				prec.append(precision_score(y_test_edited, predictions))
-    				rec.append(recall_score(y_test_edited, predictions))
-                    
-    		print(max(accuracy) , max(prec), max(rec) , max(f1_macro) , max(f1_weighted))
-            
-    		dd['metric=' + metric]['acc'] = max(accuracy)
-    		dd['metric=' + metric]['prec'] = max(prec)
-    		dd['metric=' + metric]['rec'] = max(rec)
-    		dd['metric=' + metric]['f1_macro'] = max(f1_macro)
-    		dd['metric=' + metric]['f1_weighted'] = max(f1_weighted)
-    		dd['metric=' + metric]['pos_acc'] = space[np.argmax(accuracy)]
-    		dd['metric=' + metric]['pos_prec'] = space[np.argmax(prec)]
-    		dd['metric=' + metric]['pos_rec'] = space[np.argmax(rec)]
-    		dd['metric=' + metric]['pos_f1_macro'] = space[np.argmax(f1_macro)]
-    		dd['metric=' + metric]['pos_f1_weighted'] = space[np.argmax(f1_weighted)]
+	
+	dd = {}
+	for metric in ['max','mean','max3']:
+			
+			dd['metric=' + metric] = {}
+			prec, rec, f1_macro, f1_pos = [], [], [], []
+			if metric == 'max':
+					simulated = simulated_max
+			elif metric == 'mean':
+					simulated = simulated_mean
+			else:
+					simulated = simulated_max3
+			
+			for th1 in space:
+					predictions = np.array(simulated[str(np.round(th1,2))])
+					f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
+					f1_pos.append(f1_score(y_test_edited, predictions, average = 'binary' , pos_label=1))
+					prec.append(precision_score(y_test_edited, predictions))
+					rec.append(recall_score(y_test_edited, predictions))
+					
+			print(max(prec), max(rec) , max(f1_macro) , max(f1_pos))
+			
+			dd['metric=' + metric]['prec'] = max(prec)
+			dd['metric=' + metric]['rec'] = max(rec)
+			dd['metric=' + metric]['f1_macro'] = max(f1_macro)
+			dd['metric=' + metric]['f1_pos'] = max(f1_pos)
+			dd['metric=' + metric]['pos_prec'] = space[np.argmax(prec)]
+			dd['metric=' + metric]['pos_rec'] = space[np.argmax(rec)]
+			dd['metric=' + metric]['pos_f1_macro'] = space[np.argmax(f1_macro)]
+			dd['metric=' + metric]['pos_f1_pos'] = space[np.argmax(f1_pos)]
 
-    if export_csv:
-        pd.DataFrame.from_dict(dd).to_csv('furn_' + name + '.csv')
-    
-    return
+	if export_csv:
+		pd.DataFrame.from_dict(dd).to_csv('furn_' + name + '.csv')
+	
+	return
 
 
 def manipulate_on_sentence_level(ddf1, saveplot = False):
@@ -213,7 +210,7 @@ names = [ 'density_Biomineralization_train_ratio_1_1_test_ratio' , 'density_Chlo
 mesh = ["Biomineralization" , "Chlorophyceae" , "Cytoglobin"]
 
 #names = names[1:2]
-name = names[1]
+name = names[2]
 for name in names:
     space =  np.arange(0.65, 0.91, 0.01)
     
@@ -238,4 +235,29 @@ predictions = simulated_max['0.81']
 predictions = simulated_max['0.8']
 
 print(confusion_matrix(y_test_edited, predictions))
+#%%
 
+#predictions_mode1 = simulated_max['0.81']
+#naming = 'bioFurn'
+
+#predictions_mode1 = simulated_max['0.8']
+#naming = 'chloroFurn'
+
+predictions_mode1 = simulated_max['0.8']
+naming = 'cytoFurn'
+
+print(confusion_matrix(y_test_edited, predictions_mode1))
+
+
+results_mode1 = []   
+
+results_mode1.append(f1_score(y_test_edited, predictions_mode1, average = 'macro'))
+results_mode1.append(f1_score(y_test_edited, predictions_mode1, average = 'binary' , pos_label=1))
+results_mode1.append(precision_score(y_test_edited, predictions_mode1))
+results_mode1.append(recall_score(y_test_edited, predictions_mode1))
+
+results = pd.DataFrame()
+results['scores'] = results_mode1
+
+results.index = ['f1_macro','f1_pos', 'prec', 'recall']
+results.to_csv(naming + '.csv')

@@ -73,7 +73,7 @@ def export_tuned_results(space, y_test_edited, export_csv = False):
 	for metric in ['max','mean','max3','yolo']:
 			
 			dd['metric=' + metric] = {}
-			accuracy, prec, rec, f1_macro, f1_weighted = [], [], [], [], []
+			prec, rec, f1_macro, f1_pos = [], [], [], []
 			if metric == 'max':
 					simulated = simulated_max
 			elif metric == 'mean':
@@ -87,23 +87,20 @@ def export_tuned_results(space, y_test_edited, export_csv = False):
 			for th1 in space:
 					predictions = np.array(simulated[str(np.round(th1,2))])
 					f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
-					f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
-					accuracy.append(acc(y_test_edited, predictions))
+					f1_pos.append(f1_score(y_test_edited, predictions, average = 'binary' , pos_label=1))
 					prec.append(precision_score(y_test_edited, predictions))
 					rec.append(recall_score(y_test_edited, predictions))
 					
-			print(max(accuracy) , max(prec), max(rec) , max(f1_macro) , max(f1_weighted))
+			print(max(prec), max(rec) , max(f1_macro) , max(f1_pos))
 			
-			dd['metric=' + metric]['acc'] = max(accuracy)
 			dd['metric=' + metric]['prec'] = max(prec)
 			dd['metric=' + metric]['rec'] = max(rec)
 			dd['metric=' + metric]['f1_macro'] = max(f1_macro)
-			dd['metric=' + metric]['f1_weighted'] = max(f1_weighted)
-			dd['metric=' + metric]['pos_acc'] = space[np.argmax(accuracy)]
+			dd['metric=' + metric]['f1_pos'] = max(f1_pos)
 			dd['metric=' + metric]['pos_prec'] = space[np.argmax(prec)]
 			dd['metric=' + metric]['pos_rec'] = space[np.argmax(rec)]
 			dd['metric=' + metric]['pos_f1_macro'] = space[np.argmax(f1_macro)]
-			dd['metric=' + metric]['pos_f1_weighted'] = space[np.argmax(f1_weighted)]
+			dd['metric=' + metric]['pos_f1_pos'] = space[np.argmax(f1_pos)]
 
 	if export_csv:
 		pd.DataFrame.from_dict(dd).to_csv(name + '_tuned.csv')
@@ -181,7 +178,7 @@ os.chdir(path)
 names = [ 'SETN2020_DCbioSentenceMax_results_Biomineralization_train_ratio_1_1_test_ratio' , 'SETN2020_DCbioSentenceMax_results_Chlorophyceae_train_ratio_1_1_test_ratio' , 'SETN2020_DCbioSentenceMax_results_Cytoglobin_train_ratio_1_1_test_ratio']
 mesh = ["Biomineralization" , "Chlorophyceae" , "Cytoglobin"]
 
-name = names[0]
+name = names[2]
 space = np.arange(0.65, 0.91, 0.01)
 
 for name in names:
@@ -199,16 +196,31 @@ for name in names:
 
 #%%
     
-# bio % cyto
-predictions = simulated_max['0.77']
+
+#predictions_mode1 = simulated_max['0.77']
+#naming = 'bio'
+
+#predictions_mode1 = simulated_max['0.77']
+#naming = 'chloro'
+
+predictions_mode1 = simulated_max['0.77']
+naming = 'cyto'
+
+print(confusion_matrix(y_test_edited, predictions_mode1))
 
 
-# chloro
-predictions = simulated_max['0.78']
+results_mode1 = []   
 
-print(confusion_matrix(y_test_edited, predictions))
+results_mode1.append(f1_score(y_test_edited, predictions_mode1, average = 'macro'))
+results_mode1.append(f1_score(y_test_edited, predictions_mode1, average = 'binary' , pos_label=1))
+results_mode1.append(precision_score(y_test_edited, predictions_mode1))
+results_mode1.append(recall_score(y_test_edited, predictions_mode1))
 
+results = pd.DataFrame()
+results['scores'] = results_mode1
 
+results.index = ['f1_macro','f1_pos', 'prec', 'recall']
+results.to_csv(naming + '.csv')
 #%% plots of distributions
 df_max = manipulate_on_sentence_level(ddf1)
 df = manipulate_on_instance_level(ddf1)

@@ -1,2 +1,2 @@
-,f1_macro,f1_weighted,accuracy,prec,rec,execution_time(sec),tp,fp,fn,tn,shape train data,shape test data
-0,0.5775000000000001,0.7236094674556214,0.7869822485207101,1.0,0.16279069767441862,1.355,252,0,72,14,"(2000, 26930)","(338, 26930)"
+,f1_pos,f1_macro,prec,rec,execution_time(sec),tp,fp,fn,tn,shape train data,shape test data
+0,0.28,0.5775000000000001,1.0,0.16279069767441862,1.338,252,0,72,14,"(2000, 26930)","(338, 26930)"

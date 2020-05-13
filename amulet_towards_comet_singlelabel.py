@@ -543,18 +543,17 @@ def state_of_the_art_predictor(biobert,x_test,th,cmax,label_embedding):
 
 def save_results(mode, label, scenario, y_test_edited, predictions, time_execution, threshold = [], rest_information = []):
 
-	accuracy, prec, rec, f1_macro, f1_weighted, exec_time = [], [], [], [], [], []
+	prec, rec, f1_macro, f1_pos, exec_time = [], [], [], [], []
 
 	if mode == 5:
 
 		f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
-		f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
-		accuracy.append(acc(y_test_edited, predictions))
+		f1_pos.append(f1_score(y_test_edited, predictions, average = 'binary', pos_label = 1))
 		prec.append(precision_score(y_test_edited, predictions))
 		rec.append(recall_score(y_test_edited, predictions))
 		exec_time.append(time_execution)
 
-		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time)), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)']) 
+		df = pd.DataFrame(list(zip(f1_pos, f1_macro, prec, rec, exec_time)), columns =['f1_pos', 'f1_macro', 'prec', 'rec', 'execution_time(sec)']) 
 		df.to_csv('SETN2020_LWS_results_' + label + '_' + scenario +  '.csv')
 
 		return
@@ -562,13 +561,12 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 	elif mode == 1:
 
 		f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
-		f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
-		accuracy.append(acc(y_test_edited, predictions))
+		f1_pos.append(f1_score(y_test_edited, predictions, average = 'binary', pos_label = 1))
 		prec.append(precision_score(y_test_edited, predictions))
 		rec.append(recall_score(y_test_edited, predictions))
 		exec_time.append(time_execution)
 		
-		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time)), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)']) 
+		df = pd.DataFrame(list(zip(f1_pos, f1_macro, prec, rec, exec_time)), columns =['f1_pos', 'f1_weighted', 'prec', 'rec', 'execution_time(sec)']) 
 		df.to_csv('SETN2020_DCbioSentenceMax_results_' + label + '_' + scenario + '.csv')
 
 		return
@@ -578,20 +576,19 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 		learner = rest_information[2]
 
 		f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
-		f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
-		accuracy.append(acc(y_test_edited, predictions))
+		f1_pos.append(f1_score(y_test_edited, predictions, average = 'binary', pos_label = 1))
 		prec.append(precision_score(y_test_edited, predictions))
 		rec.append(recall_score(y_test_edited, predictions))
 		exec_time.append(time_execution)
+
 		tp, fp, fn, tn = confusion_matrix(y_test_edited, predictions).flatten()
 
 
-		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time, [tp], [fp], [fn], [tn], [rest_information[0]], [rest_information[1]] ) ), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)', 'tp', 'fp', 'fn', 'tn', 'shape train data', 'shape test data']) 
+		df = pd.DataFrame(list(zip(f1_pos, f1_macro, prec, rec, exec_time, [tp], [fp], [fn], [tn], [rest_information[0]], [rest_information[1]] ) ), columns =['f1_pos', 'f1_macro', 'prec', 'rec', 'execution_time(sec)', 'tp', 'fp', 'fn', 'tn', 'shape train data', 'shape test data']) 
 		df.to_csv('SETN2020_WSL-baseline_results_' + label + '_' + scenario + '_' + learner + '.csv')
 
 		return
 				
-	
 
 	elif mode == 3 or mode == 4:
 		
@@ -609,8 +606,7 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 			if _ in reject_th:
 
 				f1_macro.append(-1)
-				f1_weighted.append(-1)
-				accuracy.append(-1)
+				f1_pos.append(-1)
 				prec.append(-1)
 				rec.append(-1)
 				exec_time.append(-1)
@@ -653,8 +649,7 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 			print('time: ', exec_time[-1])
 
 			f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
-			f1_weighted.append(f1_score(y_test_edited, predictions, average = 'weighted'))
-			accuracy.append(acc(y_test_edited, predictions))
+			f1_pos.append(f1_score(y_test_edited, predictions, average = 'binary', pos_label=1))
 			prec.append(precision_score(y_test_edited, predictions))
 			rec.append(recall_score(y_test_edited, predictions))
 			tp, fp, fn, tn = confusion_matrix(y_test_edited, predictions).flatten()
@@ -664,7 +659,7 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 			tns.append(tn)
 
 
-		df = pd.DataFrame(list(zip(f1_macro, f1_weighted, accuracy, prec, rec, exec_time, tps, fps, fns, tns)), columns =['f1_macro', 'f1_weighted', 'accuracy', 'prec', 'rec', 'execution_time(sec)', 'tp', 'fp', 'fn', 'tn']) 
+		df = pd.DataFrame(list(zip(f1_pos, f1_macro, prec, rec, exec_time, tps, fps, fns, tns)), columns =['f1_pos', 'f1_macro', 'prec', 'rec', 'execution_time(sec)', 'tp', 'fp', 'fn', 'tn']) 
 		df.set_index(np.arange(0.73, 0.83, 0.01), inplace=True)
 		df.to_csv('SETN2020_' + approach + '_results_' + label + '_' + scenario + '_' + learner + '.csv')
 

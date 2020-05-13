@@ -178,7 +178,7 @@ os.chdir(path)
 names = [ 'SETN2020_DCbioSentenceMax_results_Biomineralization_train_ratio_1_1_test_ratio' , 'SETN2020_DCbioSentenceMax_results_Chlorophyceae_train_ratio_1_1_test_ratio' , 'SETN2020_DCbioSentenceMax_results_Cytoglobin_train_ratio_1_1_test_ratio']
 mesh = ["Biomineralization" , "Chlorophyceae" , "Cytoglobin"]
 
-name = names[2]
+name = names[0]
 space = np.arange(0.65, 0.91, 0.01)
 
 for name in names:
@@ -197,14 +197,14 @@ for name in names:
 #%%
     
 
-#predictions_mode1 = simulated_max['0.77']
-#naming = 'bio'
+predictions_mode1 = simulated_max['0.77']
+naming = 'bio'
 
 #predictions_mode1 = simulated_max['0.77']
 #naming = 'chloro'
 
-predictions_mode1 = simulated_max['0.77']
-naming = 'cyto'
+#predictions_mode1 = simulated_max['0.77']
+#naming = 'cyto'
 
 print(confusion_matrix(y_test_edited, predictions_mode1))
 

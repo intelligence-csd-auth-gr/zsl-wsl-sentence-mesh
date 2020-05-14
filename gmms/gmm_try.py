@@ -56,7 +56,7 @@ def call_gmm(X, y, naming):
     results['scores'] = results_gmm
 
     results.index = ['f1_pos', 'prec', 'recall', 'center0', 'center1', 'average of centers']
-    results.to_csv(naming + '.csv')
+    results.to_csv(naming + '_all_sentences.csv')
     
     return clf.means_
 
@@ -147,8 +147,8 @@ for name in names:
     df = manipulate_on_instance_level(density)
     
     
-    #X = df.max_similarity_total
-    X = df_max.max_similarity
+    X = df.max_similarity_total
+    #X = df_max.max_similarity
     y = df_max.max_similarity
     print(name, X.shape)
     centers = call_gmm(X,y, mesh[counter])

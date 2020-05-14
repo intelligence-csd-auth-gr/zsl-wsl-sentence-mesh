@@ -178,7 +178,7 @@ os.chdir(path)
 names = [ 'SETN2020_DCbioSentenceMax_results_Biomineralization_train_ratio_1_1_test_ratio' , 'SETN2020_DCbioSentenceMax_results_Chlorophyceae_train_ratio_1_1_test_ratio' , 'SETN2020_DCbioSentenceMax_results_Cytoglobin_train_ratio_1_1_test_ratio']
 mesh = ["Biomineralization" , "Chlorophyceae" , "Cytoglobin"]
 
-name = names[0]
+name = names[2]
 space = np.arange(0.65, 0.91, 0.01)
 
 for name in names:
@@ -222,8 +222,8 @@ results['scores'] = results_mode1
 results.index = ['f1_macro','f1_pos', 'prec', 'recall']
 results.to_csv(naming + '.csv')
 #%% plots of distributions
-df_max = manipulate_on_sentence_level(ddf1)
-df = manipulate_on_instance_level(ddf1)
+df_max = manipulate_on_sentence_level(density)
+df = manipulate_on_instance_level(density)
 
 
 #%% gmms
@@ -234,19 +234,28 @@ from sklearn.metrics import confusion_matrix
 
 # fit a Gaussian Mixture Model with two components
 clf = mixture.GaussianMixture(n_components=2, covariance_type='full', init_params = 'kmeans')
-X = df.max_similarity_total
+#X = df.max_similarity_total
+X = df_max.max_similarity
 X_train = np.array(X)
+X_train = np.round(X_train,4)
 clf.fit(X_train.reshape(-1,1))
 
 print(clf.means_)
 
 X_test = df_max.max_similarity
+X_test = np.round(X_test,4)
+
 #clf.predict(np.array(X_test).reshape(-1,1))
 #clf.predict(np.array(X_test).reshape(-1,1)) == df_max.label
-np.count_nonzero( clf.predict(np.array(X_test).reshape(-1,1)) == df_max.label )
+#np.count_nonzero( clf.predict(np.array(X_test).reshape(-1,1)) == df_max.label )
+ground_truth = np.array(df_max.label)
+predictions = clf.predict(np.array(X_test).reshape(-1,1))
 
-confusion_matrix(np.array(df_max.label), clf.predict(np.array(X_test).reshape(-1,1)))
+print(confusion_matrix(ground_truth, predictions))
 
+print(f1_score(ground_truth, predictions, average = 'binary', pos_label = 1))
+print(precision_score(ground_truth, predictions))
+print(recall_score(ground_truth, predictions))
 
 #%% still not ready
 

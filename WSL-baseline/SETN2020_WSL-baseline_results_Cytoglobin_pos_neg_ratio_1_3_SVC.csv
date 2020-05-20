@@ -1,2 +1,2 @@
-,f1_pos,f1_macro,prec,rec,execution_time(sec),tp,fp,fn,tn,shape train data,shape test data
-0,0.865979381443299,0.9139281071439369,1.0,0.7636363636363637,1.54,164,0,13,42,"(2000, 26138)","(219, 26138)"
+,f1_pos,prec,rec,execution_time(sec),tp,fp,fn,tn,shape train data,shape test data
+0,0.865979381443299,1.0,0.7636363636363637,1.604,164,0,13,42,"(2000, 26138)","(219, 26138)"

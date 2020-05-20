@@ -95,7 +95,6 @@ def occurence(x_train, y_train, label):
 	for i in range(0,len(x_train)):
 			
 			if( x_train[i].__contains__(label) or x_train[i].__contains__(label.lower()) ):
-						#print(i)
 						y_train_occ.append(y_train[i]+"#"+label)
 			else:
 						y_train_occ.append(y_train[i])
@@ -121,16 +120,13 @@ def train_classifier(lea, x_train, y_train, x_test, y_test):
 	lea.fit(x_train, y_train)
 	y_pred = lea.predict(x_test)
 
-	f1=f1_score(y_pred, y_test, average = 'macro')
-	print(np.round(f1,3))
-
 	return y_pred
 
 
 def my_predictor_per_sentence_max(biobert, x_test, label_emb, threshold = 0.77):
 
 	y_pred=[0 for i in range(len(x_test))]
-	print(' th value that is examined: ', threshold)
+	#print(' th value that is examined: ', threshold)
 
 	for i in range(0,len(x_test)):
 		
@@ -160,7 +156,7 @@ def my_predictor_per_sentence_max_loaded_embs(x, threshold = 0.77):
 		y_pred=[0 for i in range(len(x))]
 		df[th] = []
 		
-		print(' th value that is examined: ', th)
+		#print(' th value that is examined: ', th)
 		c = 0
 		
 		for i in x.keys():
@@ -258,7 +254,7 @@ def augment_y_with_embeddings_max(biobert, label, label_embedding, x_train, y_tr
 							y.append( y_train[i] )
 			 
 				if counter == 0 or counter == len(x_train):
-					reject_th.append(th)	
+					reject_th.append(np.round(th,2))	
 				y_all[th] = y
 
 		else:
@@ -311,24 +307,22 @@ def state_of_the_art_predictor(biobert,x_test,th,cmax,label_embedding):
 
 def save_results(mode, label, scenario, y_test_edited, predictions, time_execution, threshold = [], rest_information = []):
 
-	prec, rec, f1_macro, f1_pos, exec_time = [], [], [], [], []
+	prec, rec, f1_pos, exec_time = [], [], [], []
 
 	if mode == 1:
 
-		f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
 		f1_pos.append(f1_score(y_test_edited, predictions, average = 'binary', pos_label = 1))
 		prec.append(precision_score(y_test_edited, predictions))
 		rec.append(recall_score(y_test_edited, predictions))
 		exec_time.append(time_execution)
 		
-		df = pd.DataFrame(list(zip(f1_pos, f1_macro, prec, rec, exec_time)), columns =['f1_pos', 'f1_weighted', 'prec', 'rec', 'execution_time(sec)']) 
+		df = pd.DataFrame(list(zip(f1_pos, prec, rec, exec_time)), columns =['f1_pos', 'prec', 'rec', 'execution_time(sec)']) 
 		df.to_csv('SETN2020_DCbioSentenceMax_results_' + label + '_' + scenario + '.csv')
 
 	elif mode == 2:
 
 		learner = rest_information[2]
 
-		f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
 		f1_pos.append(f1_score(y_test_edited, predictions, average = 'binary', pos_label = 1))
 		prec.append(precision_score(y_test_edited, predictions))
 		rec.append(recall_score(y_test_edited, predictions))
@@ -337,7 +331,7 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 		tp, fp, fn, tn = confusion_matrix(y_test_edited, predictions).flatten()
 
 
-		df = pd.DataFrame(list(zip(f1_pos, f1_macro, prec, rec, exec_time, [tp], [fp], [fn], [tn], [rest_information[0]], [rest_information[1]] ) ), columns =['f1_pos', 'f1_macro', 'prec', 'rec', 'execution_time(sec)', 'tp', 'fp', 'fn', 'tn', 'shape train data', 'shape test data']) 
+		df = pd.DataFrame(list(zip(f1_pos, prec, rec, exec_time, [tp], [fp], [fn], [tn], [rest_information[0]], [rest_information[1]] ) ), columns =['f1_pos', 'prec', 'rec', 'execution_time(sec)', 'tp', 'fp', 'fn', 'tn', 'shape train data', 'shape test data']) 
 		df.to_csv('SETN2020_WSL-baseline_results_' + label + '_' + scenario + '_' + learner + '.csv')
 				
 	elif mode == 3 or mode == 4:
@@ -352,16 +346,18 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 		tps, fps, fns, tns = [], [], [], []
 
 		for _ in space:
-				
-			if _ in reject_th:
+			
+			if np.round(_,2) in reject_th:
 
-				f1_macro.append(-1)
 				f1_pos.append(-1)
 				prec.append(-1)
 				rec.append(-1)
 				exec_time.append(-1)
+				tps.append(-1)
+				fps.append(-1)
+				fns.append(-1)
+				tns.append(-1)
 				continue
-
 
 			start = time.time()
 
@@ -372,12 +368,10 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 				x_test_bert = rest_information [4]
 				y_test_edited = rest_information[5]
 
-
 				approach = 'WDCbio(bioBERT)'
 
 				y_train_edited = change_labels(y_train_bert[_], label)
 				predictions =  train_classifier(lea, x_train_bert, y_train_edited, x_test_bert, y_test_edited)
-			
 			
 			elif mode == 4:
 
@@ -392,12 +386,10 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 				y_train_edited =  change_labels(y_train_mode4[_], label)
 				predictions =  train_classifier(lea, x_train_tf, y_train_edited, x_test_tf, y_test_edited)
 
-
 			end = time.time()
-			exec_time.append((end - start) + time_preprocess1 + time_preprocess2)
-			print('time: ', exec_time[-1])
 
-			f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
+			exec_time.append(np.round( (end - start) + time_preprocess1 + time_preprocess2, 3))
+
 			f1_pos.append(f1_score(y_test_edited, predictions, average = 'binary', pos_label=1))
 			prec.append(precision_score(y_test_edited, predictions))
 			rec.append(recall_score(y_test_edited, predictions))
@@ -408,19 +400,19 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 			tns.append(tn)
 
 
-		df = pd.DataFrame(list(zip(f1_pos, f1_macro, prec, rec, exec_time, tps, fps, fns, tns)), columns =['f1_pos', 'f1_macro', 'prec', 'rec', 'execution_time(sec)', 'tp', 'fp', 'fn', 'tn']) 
-		df.set_index(np.arange(0.73, 0.83, 0.01), inplace=True)
+		df = pd.DataFrame(list(zip(f1_pos, prec, rec, exec_time, tps, fps, fns, tns)), columns =['f1_pos', 'prec', 'rec', 'execution_time(sec)', 'tp', 'fp', 'fn', 'tn']) 
+		print(df)
+		df.set_index(np.arange(0.65, 0.86, 0.01), inplace=True)
 		df.to_csv('SETN2020_' + approach + '_results_' + label + '_' + scenario + '_' + learner + '.csv')
 
 	elif mode == 5:
 
-		f1_macro.append(f1_score(y_test_edited, predictions, average = 'macro'))
 		f1_pos.append(f1_score(y_test_edited, predictions, average = 'binary', pos_label = 1))
 		prec.append(precision_score(y_test_edited, predictions))
 		rec.append(recall_score(y_test_edited, predictions))
 		exec_time.append(time_execution)
 
-		df = pd.DataFrame(list(zip(f1_pos, f1_macro, prec, rec, exec_time)), columns =['f1_pos', 'f1_macro', 'prec', 'rec', 'execution_time(sec)']) 
+		df = pd.DataFrame(list(zip(f1_pos, prec, rec, exec_time)), columns =['f1_pos', 'prec', 'rec', 'execution_time(sec)']) 
 		df.to_csv('SETN2020_LWS_results_' + label + '_' + scenario +  '.csv')
 
 	else:
@@ -513,7 +505,6 @@ def main(mesh, alg, scenario, path):
 
 				label_emb= np.array(torch.stack(biobert.word_vector(label)))[0]
 				df_test, x_test_new_export, total_calls_train, total_sent_train, x_test_old, reject_test =  my_predictor_save(biobert, x_test_new, label_emb)
-				print(x_test_new_export[0][0:10], '\n', x_test_old[0][0:10], '\n', x_test_new[0][0:10])
 
 				predictions = [0 for i in range(len(x_test_new_export))]
 				c = 0
@@ -579,9 +570,7 @@ def main(mesh, alg, scenario, path):
 				# here x_train_bert and x_test_bert are loaded, containing the embedding profile of the total instance into lists, as well as the computed y values fot th = 0.77
 				x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = load_embeddings(label, selected_scenario, os.getcwd())
 
-				
-				print(len(x_train_bert_profile) , len(x_test_bert_profile))
-				
+								
 				x_train_bert1 = my_predictor_per_sentence_max_loaded_embs(x_train_bert_profile, threshold = space)
 				x_test_bert1 = my_predictor_per_sentence_max_loaded_embs(x_test_bert_profile, threshold = space)
 
@@ -604,9 +593,8 @@ def main(mesh, alg, scenario, path):
 					rest_information = [space, reject_th, x_train_new, x_test_new, y_train_mode4, y_test_edited, lea, learner, 0, time_preprocess2]
 
 
-
-				print("rej ", reject_th)
-				print('test: ', len(y_test))
+				print('\n''***\tThe threshold values that did not manage to decide more than one label\t***')
+				print('***\trej ', reject_th, '\n')
 
 				os.chdir(new_path)
 				save_results(mode, label, selected_scenario, y_test_edited, [], 0, rest_information = rest_information)
@@ -703,8 +691,10 @@ if __name__ == "__main__":
 	mesh = int(input('You have to select among our labels: \n1. Biomineralization \n2. Chlorophyceae \n3. Cytoglobin \n4. all of them\n\nYour answer: ... '))
 	alg = int(input('Choose which algorithm you want to run: \n1. DCbio(Sentence-max) \n2. Baseline of WSL \n3. WDCbio(bioBERT) \n4. WDCbio(tfidf) \n5. LWS\n6. Save Embeddings on Sentence Level\n7. Save Embeddings\nYour answer: ... '))
 
-	scenario = int(input('Moreover, we need to know which scenario based on ratio between postive and negative data you need to run, train_test_ratio equals to: ...\n1. 1_1 \n2. 1_3\n3. both\n\nYour answer: ...'))
-
+	if alg != 1:
+		scenario = int(input('Moreover, we need to know which scenario based on ratio between postive and negative data you need to run, train_test_ratio equals to: ...\n1. 1_1 \n2. 1_3\n3. both\n\nYour answer: ...'))
+	else:
+		scenario = 1
 	
 	main(mesh, alg, scenario, os.getcwd())
 	print('End of scripting')

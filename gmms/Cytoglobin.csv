@@ -1,7 +1,0 @@
-,scores
-f1_pos,0.9215686274509803
-prec,1.0
-recall,0.8545454545454545
-center0,[0.73885699]
-center1,[0.79436756]
-average of centers,0.767

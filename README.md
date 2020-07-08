@@ -4,7 +4,7 @@ This repository contains the code for our [SETN 2020](http://www.eetn.gr/index.p
 
 In brief, we develop a Zero-shot learning (ZSL) mechanism that tries to perform on-the-fly classification examining text-raw data that stem from PubMed abstracts searching for emerging MeSH terms that appear each upcoming year. Therefore, bioBERT embeddings are exploited comouted on sentence-level so as to exploit better the semantic relationships that occur into the corresponding abstracts, avoiding misclassification that may occur in case of word-guided approaches. Later, we use the same mechanism for providing weak labels into gathered data from previous years, and then apply two different Weakly supervised learning (WSL) approaches for examining their performance on the same tasks. Three different MeSH terms were investigated here, under single-label mode. An expansion of our work towards multi-label classification tasks covering more complex cases and larger number of labels is the next step in the context of a larger project, called AMULET (more info on Additional resources section).
 
-If you find the code useful for your research, please cite our paper:
+If you find the code useful for your research, please cite our paper: (citation still not announced)
 
 
         @inproceedings{,
@@ -23,7 +23,7 @@ Our code has been tested on Windows10 using python 3.7.6. The mentioned time res
 
 
         
-# #Developed by: 
+## Developed by: 
 
 |    Name     | e-mail          |
 | ------------- |:-------------:|

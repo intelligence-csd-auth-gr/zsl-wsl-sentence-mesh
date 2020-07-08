@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-
+Plot distribution diagrams per examined MeSH term as it concerns the sentence-based proposed approach
 
 @authors:
 Nikos Mylonas   myloniko@csd.auth.gr
 Stamatis Karlos stkarlos@csd.auth.gr
 Grigorios Tsoumakas greg@csd.auth.gr
 """
-
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -31,7 +30,6 @@ def change_labels(y_labels, label):
 			new_y.append(0)
 
 	return new_y
-
 
 def manipulate_on_sentence_level(df, y, case, label, ratio, saveplot = False):
 	
@@ -67,7 +65,6 @@ def manipulate_on_sentence_level(df, y, case, label, ratio, saveplot = False):
 	
 	return df_max
 
-
 def manipulate_on_instance_level(df,  y, case, label_name, ratio, saveplot = False):
 	
 	labels = []
@@ -89,7 +86,6 @@ def manipulate_on_instance_level(df,  y, case, label_name, ratio, saveplot = Fal
 			max_similarity_total.append(j)
 			labels.append(label)
 		
-	
 	df = pd.DataFrame()
 	df['max_similarity_total'] = max_similarity_total
 	df['labels'] = labels
@@ -113,7 +109,8 @@ def bring_pickle(label, path):
 	current_path = os.getcwd()
 	os.chdir(path)
 	names = os.listdir(os.getcwd())
-	print(names)
+	#print(names)
+	
 	for name in names:
 		if label in name:
 			break
@@ -131,47 +128,17 @@ def bring_pickle(label, path):
 	
 	return df_train, df_test, y_train, y_test, total_calls_train, total_sentences_train, total_calls_test, total_sentences_test, time_computation, ratio
 
-
-
 def check_empty_lists(l):
+    
 	counter = 0
 	for i in l:
 		if i == []:
 			counter +=1
+            
 	return counter
 
-
-def gmms():
-
-
-	for _ in labels:
-
-		# fit a Gaussian Mixture Model with two components
-		clf = mixture.GaussianMixture(n_components=2, covariance_type='full')#, init_params = 'kmeans')
-		X = df[_][0].max_similarity
-		#X = df[_][2].max_similarity_total
-		
-		X_train = np.array(X)
-		clf.fit(X_train.reshape(-1,1))
-		
-		print(clf.means_ , np.mean(clf.means_))
-		
-		#X_test = df[_][3].max_similarity_total
-		X_test = df[_][1].max_similarity
-
-		#clf.predict(np.array(X_test).reshape(-1,1))
-		#clf.predict(np.array(X_test).reshape(-1,1)) == df_max.label
-		
-		#np.count_nonzero( clf.predict(np.array(X_test).reshape(-1,1)) == df[_][3].labels )
-		print(X.shape, X_test.shape)
-		#print(confusion_matrix(np.array(df[_][3].labels), clf.predict(np.array(X_test).reshape(-1,1))))
-		print(confusion_matrix(np.array(df[_][1].label), clf.predict(np.array(X_test).reshape(-1,1))))
-	return
-		
-
-#%%
-path = r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence'
-
+#%% cell of the main code
+path = '..\Amulet-Setn\bioBERT embeddings profile per sentence'
 
 labels = ["Biomineralization" , "Chlorophyceae" , "Cytoglobin"]
 df = {}
@@ -180,7 +147,7 @@ mplot = True
 for _ in labels:
 	
 	df_train_profile, df_test_profile, y_train, y_test, total_calls_train, total_sentences_train, total_calls_test, total_sentences_test, time_computation, ratio = bring_pickle(_, path)
-	
+	print('Exmined MeSH term: ', _)
 	print('Train instances: ', check_empty_lists(df_train_profile) , len(df_train_profile))
 	print('Test instances: ', check_empty_lists(df_test_profile), len(df_test_profile))
 
@@ -198,15 +165,13 @@ for _ in labels:
 	print(_, " : ", s, " calls of bioBERT during test")
 	print(_, " : ",  sum(total_sentences_test), " cases of bioBERT during test")
 
-	
-	#df_max_train = manipulate_on_sentence_level(df_train_profile, change_labels(y_train, _), 'train', _, ratio, mplot)
+	print('Plotting..')
+	os.chdir('..\Amulet-Setn\plots')
 	df_max_test = manipulate_on_sentence_level(df_test_profile, change_labels(y_test, _), 'test', _, ratio, mplot)
 
-	#df_train = manipulate_on_instance_level(d_train_profile, y_train, 'train', _, ratio, mplot)
 	df_test = manipulate_on_instance_level(df_test_profile, change_labels(y_test, _), 'test', _, ratio, mplot)
 
-	#df[_] = [df_max_train, df_max_test, df_train, df_test]
-	
+	os.chdir(path)
+	print()
 
-
-
+print('End')

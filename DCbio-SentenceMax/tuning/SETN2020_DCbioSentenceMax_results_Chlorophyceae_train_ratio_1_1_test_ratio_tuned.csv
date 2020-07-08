@@ -1,4 +1,4 @@
-,metric=max,metric=mean,metric=max3,metric=yolo
+,metric=max,metric=mean,metric=max3,metric=all_but_min_max
 prec,1.0,0.9,1.0,0.8
 rec,1.0,1.0,1.0,1.0
 f1_macro,0.8389748937194192,0.7728591167505194,0.845526620207093,0.7772441425425214

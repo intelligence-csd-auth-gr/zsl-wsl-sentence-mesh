@@ -2,10 +2,12 @@
 
 This repository contains the code for our [SETN 2020](http://www.eetn.gr/index.php/setn-2020-home) paper with title: *Zero-Shot Classification of Biomedical Articles with EmergingMeSH Descriptors*
 
-In brief, we develop a Zero-shot learning (**ZSL**) mechanism (*ZSLbioSentMax*) that tries to perform on-the-fly classification examining text-raw data that stem from [PubMed](https://www.ncbi.nlm.nih.gov/pubmed) abstracts searching for emerging [MeSH](https://www.ncbi.nlm.nih.gov/mesh) terms that appear each upcoming year. Therefore, bioBERT embeddings are exploited comouted on sentence-level so as to exploit better the semantic relationships that occur into the corresponding abstracts, avoiding misclassification that may occur in case of word-guided approaches. Later, we use the same mechanism for providing weak labels into gathered data from previous years, and then apply two different Weakly supervised learning (**WSL**) approaches for examining their performance on the same tasks (*WSLbioSentMax(bioBERT)* and *WSLbioSentMax(tfidf)*). Three different MeSH terms were investigated here, under single-label mode. Appropriate baselines and a state-of-the-art approach have been developed as they are described into the original paper. An expansion of our work towards multi-label classification tasks covering more complex cases and larger number of labels is the next step in the context of a larger project, called AMULET (more info on Additional resources section).
+In brief, we develop a Zero-shot learning (**ZSL**) mechanism ( *ZSLbioSentMax* ) that tries to perform on-the-fly classification examining text-raw data that stem from [PubMed](https://www.ncbi.nlm.nih.gov/pubmed) abstracts searching for emerging [MeSH](https://www.ncbi.nlm.nih.gov/mesh) terms that appear each upcoming year. Therefore, bioBERT embeddings are exploited computed on sentence-level so as to exploit better the semantic relationships that occur into the corresponding abstracts, avoiding misclassification that may occur in case of word-guided approaches. Later, we use the same mechanism for providing weak labels into gathered data from previous years, and then apply two different Weakly supervised learning (**WSL**) approaches for examining their performance on the same tasks ( *WSLbioSentMax(bioBERT)* and *WSLbioSentMax(tfidf)* ). Three different MeSH terms were investigated here, under single-label mode. Appropriate baselines and a state-of-the-art approach have been developed as they are described into the original paper. An expansion of our work towards multi-label classification tasks covering more complex cases and larger number of labels is the next step in the context of a larger project, called AMULET (more info on Additional resources section). 
 
-If you find the code useful for your research, please cite our paper: (citation still not announced)
+*ZSL_and_WSL_implementations_setn2020.py* file contains a proper menu for selecting any of the implemented approaches, regarding the datasets inside **raw data** folder. In case of additional MeSH terms, you can add .txt files where each instance is in the next format: b'X labels: #y1#y2#...#yn' (X: abstract raw-text, y1,y2,...,yn the corresponding labels). The results are placed in folder with compatible names, while additional plots or code scripts for executing optimization of the existing hyper-parameters are placed accordingly.
 
+
+If you find the code useful for your research, please cite our paper: (**citation still not announced**)
 
         @inproceedings{,
               title={Zero-Shot Classification of Biomedical Articles with EmergingMeSH Descriptors},
@@ -17,19 +19,24 @@ If you find the code useful for your research, please cite our paper: (citation 
         }
         
 
-## Requirements
+## Requirements/Dependencies
 
-Our code has been tested on Windows10 using python 3.7.6. The mentioned time responses correspond to a working station embedded with Intel Core i7-9700 (3GHz) processor and 32 GB RAM.
+Our code has been tested on Windows10 using python 3.7.6. The mentioned time responses correspond to a working station embedded with Intel Core i7-9700 (3GHz) processor and 32 GB RAM. The next libaries are necessary:
+
+- Numpy
+- bioBERT
+- Spacy
+- Seaborn and Matplotlib (for graphing)
 
 
         
 ## Developed by: 
 
-|    Name     | e-mail          |
-| ------------- |:-------------:|
-| Νικόλαος Μυλωνάς     | myloniko@csd.auth.gr |
-| Σταμάτης Κάρλος      | stkarlos@csd.auth.gr |
-| Γρηγόριος Τσουμάκας  | greg@csd.auth.gr     |
+|           Name  (English/Greek)            |      e-mail          |
+| -------------------------------------------| ---------------------|
+| Nikolaos Mylonas    (Νικόλαος Μυλωνάς)     | myloniko@csd.auth.gr |
+| Stamatis Karlos     (Σταμάτης Κάρλος)      | stkarlos@csd.auth.gr |
+| Grigorios Tsoumakas (Γρηγόριος Τσουμάκας)  | greg@csd.auth.gr     |
 
 ## Funded by
 

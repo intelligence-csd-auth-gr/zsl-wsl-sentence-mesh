@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Implementation of the proposed Zero-Shot Learning and Weakly Supervised Learning algorithms as they are published on SETN2020 along with the corresponding baseline and the LWS algorithm, enriched with the bioBERT embeddings as it is described on the original paper.  
+Implementation of the proposed Zero-Shot Learning and Weakly Supervised Learning algorithms as they are published on SETN2020 along with the corresponding baseline
+and the LWS algorithm, enriched with the bioBERT embeddings as it is described on the original paper.  
 
-LWS reference: rateek Veeranna Sappadla, Jinseok Nam, Eneldo Loza Mencía, and JohannesFürnkranz. Using semantic similarity for multi-label zero-shot classification oftext documents.  InProceedings of the 23rd European Symposium on ArtificialNeural Networks, Computational Intelligence and Machine Learning (ESANN-16),Bruges, Belgium, April 2016. d-side publications.
+LWS reference: Prateek Veeranna Sappadla, Jinseok Nam, Eneldo Loza Mencía, and Johannes Fürnkranz. 
+Using semantic similarity for multi-label Ζero-shot classification of
+text documents. InProceedings of the 23rd European Symposium on ArtificialNeural Networks, Computational Intelligence and 
+Machine Learning (ESANN-16), Bruges, Belgium, April 2016. d-side publications.
 
 
 @authors:
 Nikos Mylonas   myloniko@csd.auth.gr
 Stamatis Karlos stkarlos@csd.auth.gr
 Grigorios Tsoumakas greg@csd.auth.gr
-
 """
 
 import os
@@ -118,7 +121,6 @@ def tfidf(x_train, y_train, x_test):
 def train_classifier(lea, x_train, y_train, x_test, y_test):
 
 	# feed a classifier
-
 	lea.fit(x_train, y_train)
 	y_pred = lea.predict(x_test)
 
@@ -128,7 +130,7 @@ def train_classifier(lea, x_train, y_train, x_test, y_test):
 def my_predictor_per_sentence_max(biobert, x_test, label_emb, threshold = 0.77):
 
 	y_pred=[0 for i in range(len(x_test))]
-	#print(' th value that is examined: ', threshold)
+	print(' th value that is examined: ', threshold)
 
 	for i in range(0,len(x_test)):
 		
@@ -158,7 +160,7 @@ def my_predictor_per_sentence_max_loaded_embs(x, threshold = 0.77):
 		y_pred=[0 for i in range(len(x))]
 		df[th] = []
 		
-		#print(' th value that is examined: ', th)
+		print(' th value that is examined: ', th)
 		c = 0
 		
 		for i in x.keys():
@@ -266,8 +268,10 @@ def augment_y_with_embeddings_max(biobert, label, label_embedding, x_train, y_tr
 
 
 def splitTextToNumber(string,number):
+	
 	words = string.split(" ")
 	grouped_words = [' '.join(words[i: i + number]) for i in range(0, len(words)-(number-1), 1)]
+	
 	return grouped_words
 
 
@@ -395,6 +399,7 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 			f1_pos.append(f1_score(y_test_edited, predictions, average = 'binary', pos_label=1))
 			prec.append(precision_score(y_test_edited, predictions))
 			rec.append(recall_score(y_test_edited, predictions))
+			
 			tp, fp, fn, tn = confusion_matrix(y_test_edited, predictions).flatten()
 			tps.append(tp)
 			fps.append(fp)
@@ -448,17 +453,19 @@ def load_embeddings_values(label, selected_scenario, path):
 
 		return x_train_bert, x_test_bert, time_preprocess1, x_train_new, x_test_new, y_train_new, y_test_new 
 
-##################################################################################################
+##############################################################################################################################################################################################################################################################################
 
 def main(mesh, alg, scenario, path):
 
+	# the examined MeSH terms
 	mesh_input = ["Biomineralization", "Chlorophyceae" , "Cytoglobin"]
 
 	if mesh == 4:
 		labels = mesh_input 
 	else:
-		labels = [mesh_input[mesh]]
+		labels = [mesh_input[mesh-1]]
 
+	# the two separate examined scenarios regarding the ratio between positive and negative instances 
 	scenario_input = ['pos_neg_ratio_1_1',  'pos_neg_ratio_1_3']
 
 	if scenario == 3:
@@ -476,14 +483,11 @@ def main(mesh, alg, scenario, path):
 		# read datasets
 		for selected_scenario in sc:
 
-			os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\raw data')
+			os.chdir(path + "\\raw data")
 			print('Label: ', label, 'Scenario: ', selected_scenario)
-
-
 
 			x_train,y_train = prepare_X_Y("mesh_2018_" + label.lower() + '_' + selected_scenario + ".txt")
 			x_test, y_test  = prepare_X_Y("mesh_2019_" + label.lower() +  "_mixed.txt")
-
 
 			# return to the main directory
 			os.chdir(path)
@@ -493,12 +497,10 @@ def main(mesh, alg, scenario, path):
 			if mode != 2:
 					biobert = BiobertEmbedding()
 
-
 			if mode == 1:
 			
 				# on the fly evaluation of the test data
-
-				th = 0.77
+				th = 0.77 #this is the threshold value for the performance depicted on the screen, but during the process we hold all the necessary values for optimizing over all possible th values
 				start = time.time()
 
 				x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = load_embeddings(label, selected_scenario, os.getcwd())
@@ -518,7 +520,7 @@ def main(mesh, alg, scenario, path):
 				end = time.time()
 				time_execution = (np.round(end - start,3))
 
-				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\DCbio-SentenceMax')
+				os.chdir(path + "\\DCbio-SentenceMax")
 				save_results(mode, label, selected_scenario, y_test_edited, predictions, time_execution)
 
 				print('Saving pickles for tuning stage... ')
@@ -527,7 +529,6 @@ def main(mesh, alg, scenario, path):
 				f.close()
 
 				os.chdir(path)
-
 
 			elif mode == 2:
 			
@@ -538,7 +539,9 @@ def main(mesh, alg, scenario, path):
 
 				y_train_occ = occurence(x_train_new, y_train_new, label)
 				x_train_tf, x_test_tf = tfidf(x_train_new, y_train_new, x_test_new)
+				
 				print(x_train_tf.shape)
+				
 				y_train_edited = change_labels(y_train_occ, label)
 				y_test_edited =  change_labels(y_test_new,  label)
 				
@@ -552,18 +555,16 @@ def main(mesh, alg, scenario, path):
 
 				rest_information = [x_train_tf.shape, x_test_tf.shape, learner]
 
-				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\WSL-baseline')
+				os.chdir(path + "\\WSL-baseline")
 				save_results(mode, label, selected_scenario, y_test_edited, predictions, time_execution, threshold = [],  rest_information = rest_information)
-
 
 			elif mode == 3 or mode == 4:
 				
 				# use Embeddings
-				
 				th = [0.77]
 				space = np.arange(0.65, 0.86, 0.01)
 
-				lea = SVC(kernel = 'linear')
+				lea = SVC(kernel='linear')
 				learner = 'SVC_range'
 
 				# here x_train_bert and x_test_bert are loaded, containing the embedding of the total instance (e.g. 1998 vectors of (768,) )
@@ -584,14 +585,14 @@ def main(mesh, alg, scenario, path):
 
 					# cosine similarity + classifier (embeddings transformed) 
 					y_train_bert, reject_th = augment_y_with_embeddings_max(biobert, label, label_emb, x_train_bert1, y_train_new, 2, threshold = space)
-					new_path = r'C:\Users\stam\Documents\git\Amulet-Setn\WDCbio(bioBERT)'
+					new_path = path + "\\WDCbio(bioBERT)"
 					rest_information = [space, reject_th, x_train_bert, y_train_bert, x_test_bert, y_test_edited, lea, learner, time_preprocess1, time_preprocess2]
 
 				else:
 
 					# cosine similarity + classifier (tfidf transformed) 
 					y_train_mode4, reject_th = augment_y_with_embeddings_max(biobert, label, label_emb, x_train_bert1, y_train_new, 2, threshold = space)
-					new_path = r'C:\Users\stam\Documents\git\Amulet-Setn\WDCbio(tfidf)'
+					new_path = path + "\\WDCbio(tfidf)"
 					rest_information = [space, reject_th, x_train_new, x_test_new, y_train_mode4, y_test_edited, lea, learner, 0, time_preprocess2]
 
 
@@ -601,17 +602,16 @@ def main(mesh, alg, scenario, path):
 				os.chdir(new_path)
 				save_results(mode, label, selected_scenario, y_test_edited, [], 0, rest_information = rest_information)
 
-
 			elif mode == 5:
 
-				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence')
+				os.chdir(path + "\\bioBERT embeddings profile per sentence")
 
 				with open('bioBERT_profile_per_sentence_' + label + '_' + selected_scenario + '.pickle', 'rb') as f:
 					x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = pickle.load(f)
 				f.close()
 
 				os.chdir(path)
-
+				
 				start = time.time()
 
 				label_emb= np.array(torch.stack(biobert.word_vector(label)))[0]
@@ -622,7 +622,7 @@ def main(mesh, alg, scenario, path):
 
 				time_execution = np.round(end-start,2)
 
-				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\LWS')
+				os.chdir(path + "\\LWS")
 
 				print('Saving density ... ')
 				with open('density_' + label + '_' + selected_scenario + '.pickle', 'wb') as f:
@@ -643,19 +643,18 @@ def main(mesh, alg, scenario, path):
 
 				end_emb = time.time()
 
-				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence')
+				os.chdir(path + "\\bioBERT embeddings profile per sentence")
 				with open('bioBERT_profile_per_sentence_' + label + '_' + selected_scenario + '.pickle', 'wb') as f:
 						pickle.dump([df_train, df_test, y_train, y_test, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sentences_train, total_calls_test, total_sentences_test] , (np.round(end_emb - start_emb,3))], f)
 				f.close()
+				
 				os.chdir(path)
 				continue
-
 
 			elif mode == 7:
 
 				# use Embeddings
-
-				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence')
+				os.chdir(path + "\\bioBERT embeddings profile per sentence")
 
 				with open('bioBERT_profile_per_sentence_' + label + '_' + selected_scenario + '.pickle', 'rb') as f:
 					x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = pickle.load(f)
@@ -668,18 +667,17 @@ def main(mesh, alg, scenario, path):
 
 				end_emb = time.time()
 
-				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings')
+				os.chdir(path + "\\bioBERT embeddings")
 
 				with open("bioBERTemb_" + selected_scenario + '_' + label + '.pickle' , 'wb') as f:
 					pickle.dump([x_train_bert, x_test_bert, (end_emb - start_emb), x_train_new, x_test_new, y_train_new, y_test_new], f,  protocol=pickle.HIGHEST_PROTOCOL)
 				f.close()
 				
-				os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence')
-
+				os.chdir(path + "\\bioBERT embeddings profile per sentence")
+				
 				print('Pickle was saved')
 
 				os.chdir(path)
-
 				continue
 	return
 

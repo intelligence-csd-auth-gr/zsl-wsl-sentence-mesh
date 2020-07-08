@@ -432,7 +432,7 @@ def save_results(mode, label, scenario, y_test_edited, predictions, time_executi
 def load_embeddings(label, selected_scenario, path):
 
 
-		os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings profile per sentence')
+		os.chdir(path + "\\bioBERT embeddings profile per sentence")
 
 		with open('bioBERT_profile_per_sentence_' + label + '_' + selected_scenario + '.pickle', 'rb') as f:
 				x_train_bert_profile, x_test_bert_profile, y_train_new, y_test_new, x_train_new, x_test_new, x_train_old, x_test_old, reject_train, reject_test, [total_calls_train, total_sent_train, total_calls_test, total_sent_test] , time_preprocess2 = pickle.load(f)
@@ -444,7 +444,7 @@ def load_embeddings(label, selected_scenario, path):
 def load_embeddings_values(label, selected_scenario, path):
 
 
-		os.chdir(r'C:\Users\stam\Documents\git\Amulet-Setn\bioBERT embeddings')
+		os.chdir(path + "\\bioBERT embeddings")
 
 		with open("bioBERTemb_" + selected_scenario + '_' + label + '.pickle' , 'rb') as f:
 					x_train_bert, x_test_bert, time_preprocess1, x_train_new, x_test_new, y_train_new, y_test_new = pickle.load(f)

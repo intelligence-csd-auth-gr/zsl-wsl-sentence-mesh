@@ -1,6 +1,6 @@
-This folder contains examples of misclassification from both methods tested in this research. Here we explain the naming used
-on the .txt files provided.
-
+This folder contains examples of misclassification from both methods tested in this research. Each file contains either the words or sentence(s) depending on the method
+that influenced each algorithm's decision along with the compute similarity. Here we explain the naming used on the .txt files provided.
+ 
 110: Ground Truth: 1, Proposed Method: 1, LWS: 0
 101: Ground Truth: 1, Proposed Method: 0, LWS: 1
 001: Ground Truth: 0, Proposed Method: 0, LWS: 1

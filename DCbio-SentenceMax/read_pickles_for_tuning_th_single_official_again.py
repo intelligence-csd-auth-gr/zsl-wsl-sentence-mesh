@@ -170,6 +170,7 @@ def manipulate_on_instance_level(ddf1, saveplot = False):
         plt.savefig('Biomineralization_density_plot_total.png' , dpi = 150)
         
     return df
+
 #%%		
 path = r'C:\Users\stam\Documents\git\Amulet-Setn\DCbio-SentenceMax'
 

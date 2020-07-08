@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-Implementation of the proposed Dataless and Weakly Supervised Learning algorithms as they are published on SETN2020 along with the corresponding baseline and the LWS algorithm, enriched with the bioBERT embeddings as it is described on the original paper.  
+Implementation of the proposed Zero-Shot Learning and Weakly Supervised Learning algorithms as they are published on SETN2020 along with the corresponding baseline and the LWS algorithm, enriched with the bioBERT embeddings as it is described on the original paper.  
+
+LWS reference: rateek Veeranna Sappadla, Jinseok Nam, Eneldo Loza Mencía, and JohannesFürnkranz. Using semantic similarity for multi-label zero-shot classification oftext documents.  InProceedings of the 23rd European Symposium on ArtificialNeural Networks, Computational Intelligence and Machine Learning (ESANN-16),Bruges, Belgium, April 2016. d-side publications.
+
 
 @authors:
-Will be completed after the final decision.
+Nikos Mylonas   myloniko@csd.auth.gr
+Stamatis Karlos stkarlos@csd.auth.gr
+Grigorios Tsoumakas greg@csd.auth.gr
 
 """
-
-
 
 import os
 import random
@@ -19,7 +22,6 @@ import pickle
 
 import numpy as np
 import pandas as pd
-
 
 from scipy.spatial import distance
 
@@ -210,7 +212,7 @@ def my_predictor_save(biobert, x, label_emb):
 		total_calls.append(calls)
 		total_sent.append(c)
 
-	#examines if all the sentences are empty
+	#examines if all the sentences are empty, leading to a rejected abstract
 	for i in df.keys():
 		if df[i] == []:
 			print('Empty sentence: ', i)
@@ -228,7 +230,7 @@ def my_predictor_save(biobert, x, label_emb):
 	return df, t_new, total_calls, total_sent, x, reject
 
 
-def augment_y_with_embeddings_max(biobert, label, label_embedding, x_train, y_train, command, threshold, qx = None):
+def augment_y_with_embeddings_max(biobert, label, label_embedding, x_train, y_train, command, threshold):
  
 	y_all= {}
 	reject_th = []

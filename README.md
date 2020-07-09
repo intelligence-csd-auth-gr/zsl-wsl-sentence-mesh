@@ -6,7 +6,7 @@ In brief, we develop a Zero-shot learning (**ZSL**) mechanism ( *ZSLbioSentMax* 
 
 *ZSL_and_WSL_implementations_setn2020.py* file contains a proper menu for selecting any of the implemented approaches, regarding the datasets inside **raw data** folder. In case of additional desired MeSH terms, you can add .txt files where each instance is in the next format: b'X labels: #y1#y2#...#yn' (X: abstract raw-text, y1,y2,...,yn the corresponding labels). The results are placed in folder with compatible names, while additional plots or code scripts for executing optimization of the existing hyper-parameters are placed accordingly. 
 
-*Hint*: Modes 6 and 7 have been added so as to save the appropriate embeddings per MeSH term, for applying the optimization based on separate threshold values. Otherwise, each run would produce results only for one specific threshold value, leading to much spent comoutational resources.
+*Hint*: Mode 6 and Mode 7 have been added so as to save the appropriate embeddings per MeSH term, for applying the optimization based on separate threshold values. Otherwise, each run would produce results only for one specific threshold value, leading to much spent comoutational resources.
 
 
 If you find the code useful for your research, please cite our paper: (**citation still not announced**)
@@ -47,4 +47,7 @@ The research work was supported by the Hellenic Foundation forResearch and Innov
 ## Additional resources
 
 - [AMULET project](https://www.linkedin.com/showcase/amulet-project/about/)
-- [Academic Team's page] (https://intelligence.csd.auth.gr/#)
+- [Academic Team's page](https://intelligence.csd.auth.gr/#)
+ 
+ ![image](https://1drv.ms/u/s!Ajv7W0MkfNZKgeYSz4ulp7z6L3e5Bw?e=65A73H)
+ 

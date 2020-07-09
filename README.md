@@ -49,5 +49,6 @@ The research work was supported by the Hellenic Foundation forResearch and Innov
 - [AMULET project](https://www.linkedin.com/showcase/amulet-project/about/)
 - [Academic Team's page](https://intelligence.csd.auth.gr/#)
  
- ![image](https://1drv.ms/u/s!Ajv7W0MkfNZKgeYSz4ulp7z6L3e5Bw?e=65A73H)
+ ![amulet-logo](https://user-images.githubusercontent.com/6009931/87019683-9204ad00-c1db-11ea-9394-855d1d3b41b3.png)
+
  

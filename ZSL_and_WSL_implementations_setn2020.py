@@ -672,9 +672,7 @@ def main(mesh, alg, scenario, path):
 				with open("bioBERTemb_" + selected_scenario + '_' + label + '.pickle' , 'wb') as f:
 					pickle.dump([x_train_bert, x_test_bert, (end_emb - start_emb), x_train_new, x_test_new, y_train_new, y_test_new], f,  protocol=pickle.HIGHEST_PROTOCOL)
 				f.close()
-				
-				os.chdir(path + "\\bioBERT embeddings profile per sentence")
-				
+							
 				print('Pickle was saved')
 
 				os.chdir(path)

@@ -1,6 +1,6 @@
 # ZSL using sentence-based bioBERT embeddings
 
-This repository contains the code for our [SETN 2020](http://www.eetn.gr/index.php/setn-2020-home) paper with title: *Zero-Shot Classification of Biomedical Articles with EmergingMeSH Descriptors*
+This repository contains the code for our [SETN 2020](http://www.eetn.gr/index.php/setn-2020-home) paper with title: *Zero-Shot Classification of Biomedical Articles with Emerging MeSH Descriptors*
 
 In brief, we develop a Zero-shot learning (**ZSL**) mechanism (*ZSLbioSentMax*) that tries to perform on-the-fly classification examining text-raw data that stem from [PubMed](https://www.ncbi.nlm.nih.gov/pubmed) abstracts searching for emerging [MeSH](https://www.ncbi.nlm.nih.gov/mesh) terms that appear each upcoming year. Therefore, bioBERT embeddings are exploited computed on sentence-level so as to exploit better the semantic relationships that occur into the corresponding abstracts, avoiding misclassification that may occur in case of word-guided approaches. 
 

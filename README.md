@@ -8,9 +8,13 @@ Later, we use the same mechanism for providing weak labels into gathered data fr
 
 Three different **MeSH** terms were investigated here, under single-label mode. Appropriate baselines and a state-of-the-art approach have been developed as they are described into the original paper. An expansion of our work towards multi-label classification tasks covering more complex cases and larger number of labels is the next step in the context of a larger project, called AMULET (more info on Additional resources section). 
 
-*ZSL_and_WSL_implementations_setn2020.py* file contains a proper menu for selecting any of the implemented approaches, regarding the datasets inside **raw data** folder. In case of additional desired MeSH terms, you can add .txt files where each instance is in the next format: b'X labels: #y1#y2#...#yn' (X: abstract raw-text, y1,y2,...,yn the corresponding labels). The results are placed in folder with compatible names, while additional plots or code scripts for executing optimization of the existing hyper-parameters are placed accordingly. 
+*ZSL_and_WSL_implementations_setn2020.py* file contains a proper menu for selecting any of the implemented approaches, regarding the datasets inside **raw data** folder. In case of additional desired MeSH terms, you can add .txt files where each instance is in the next format:
 
-*Hint*: Mode 6 and Mode 7 have been added so as to save the appropriate embeddings per MeSH term, for applying the optimization based on separate threshold values. Otherwise, each run would produce results only for one specific threshold value, leading to much spent computational resources.
+        b'X labels: #y1#y2#...#yn' (X: abstract raw-text, y1,y2,...,yn the corresponding labels).
+
+The results are placed in folder with compatible names, while additional plots or code scripts for executing optimization of the existing hyper-parameters are placed accordingly. 
+
+*Hint*: Mode 6 and Mode 7 have been added so as to save the appropriate embeddings per MeSH term, for applying the optimization based on separate threshold values. Otherwise, each run would produce results only for one specific threshold value, increasing highly the spent computational resources.
 
 
 If you find the code useful for your research, please cite our paper: (**citation still not announced**)

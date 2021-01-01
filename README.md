@@ -17,17 +17,29 @@ The results are placed in folder with compatible names, while additional plots o
 *Hint*: Mode 6 and Mode 7 have been added so as to save the appropriate embeddings per MeSH term, for applying the optimization based on separate threshold values. Otherwise, each run would produce results only for one specific threshold value, increasing highly the spent computational resources.
 
 
-If you find the code useful for your research, please cite our paper: (**citation still not announced**)
+If you find the code useful for your research, please cite our paper: 
 
-        @inproceedings{,
-              title={Zero-Shot Classification of Biomedical Articles with EmergingMeSH Descriptors},
-              booktitle={Proceedings of the 11th Hellenic Conference on Artificial Intelligence,
-               {SETN} 2020, Athens, Greece, September 02-04, 2020)},
-              author={N. Mylonas, S. Karlos and G. Tsoumakas},
-              pages={},
-              year={2020}
+        @inproceedings{DBLP:conf/setn/MylonasKT20,
+          author    = {Nikolaos Mylonas and
+                       Stamatis Karlos and
+                       Grigorios Tsoumakas},
+          editor    = {Constantine D. Spyropoulos and
+                       Iraklis Varlamis and
+                       Ion Androutsopoulos and
+                       Prodromos Malakasiotis},
+          title     = {Zero-Shot Classification of Biomedical Articles with Emerging MeSH
+                       Descriptors},
+          booktitle = {{SETN} 2020: 11th Hellenic Conference on Artificial Intelligence,
+                       Athens, Greece, September 2-4, 2020},
+          pages     = {175--184},
+          publisher = {{ACM}},
+          year      = {2020},
+          url       = {https://dl.acm.org/doi/10.1145/3411408.3411414},
+          timestamp = {Mon, 21 Sep 2020 14:53:26 +0200},
+          biburl    = {https://dblp.org/rec/conf/setn/MylonasKT20.bib},
+          bibsource = {dblp computer science bibliography, https://dblp.org}
         }
-        
+
 
 ## Requirements/Dependencies
 
